@@ -536,6 +536,7 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
                      arr_line[21] = "".
                      
                end.
+
                else if (GL.GLTypeCode = "STANDARD" or GL.GLTypeCode = "SYSTEM" ) then do:
 
 
@@ -549,48 +550,25 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
                      if available vat then arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
 
                   end.
-                  else do :
-                     for each APMatching 
-                     where APMatching.CInvoice_ID = CInvoiceVat.CInvoice_ID
-                     no-lock :
-
-                        find first APMatchingLn
-                        where APMatchingLn.APMatching_ID = APMatching.APMatching_ID
-                        no-lock no-error.
-
-                        if available APMatchingLn then find first APMatchingLnTax
-                        where APMatchingLnTax.APMatchingLn_ID = APMatchingLn.APMatchingLn_ID
-                        no-lock no-error.
-
-                        if available APMatchingLnTax then find first vat
-                        where APMatchingLnTax.Vat_ID = Vat.Vat_ID
-                        no-lock no-error.
-                        if available vat then  do: 
-                           arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
-                        end.
-
-                     end.
-                     
-                  end.
-
-                  /* if (CInvoiceVat.CInvoiceVatVatBaseDebitTC - CInvoiceVat.CInvoiceVatVatBaseCreditTC) = 
-                  (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC)
-                  then do:
-                  
-                     find first vat 
-                     where CInvoiceVat.Vat_ID = Vat.Vat_ID
-                     no-lock no-error.
-                     if available vat then 
-                     
-                     arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
-                     arr_line[21] = "".
-
-                  end.*/
-
-                  arr_line[21] = "".
-
                end.
             end.
+
+            if arr_line[17] = "" then do:
+
+               for first APMatchingLN where APMatchingLN.PvoPostingLine_ID = PostingLine.PostingLine_ID:
+                  
+                  for first APMatchingLNTax of APMatchingLN:
+                     for first Vat of APMatchingLNTax:
+                        arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
+                     end.
+
+                  end.
+
+               end.
+
+            end.
+               
+
 
             if (GL.GLTypeCode = "SYSTEM" ) then do:
 
