@@ -526,7 +526,7 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
             for each CInvoiceVat                                                
             where CInvoicevat.CInvoice_ID = CInvoice.CInvoice_ID                            
             no-lock:
-               if (GL.GLTypeCode = "VAT" and GL.GL_ID = CInvoiceVat.NormalTaxGL_ID) then do:
+               if (GL.GLTypeCode = "VAT" /*and GL.GL_ID = CInvoiceVat.NormalTaxGL_ID*/) then do:
                      find first vat 
                      where CInvoiceVat.Vat_ID = Vat.Vat_ID
                      no-lock no-error.
