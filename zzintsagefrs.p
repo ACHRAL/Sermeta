@@ -21,6 +21,8 @@ define temp-table tt_output
    field field_19 as character
    field field_20 as character
    field field_21 as character
+   field field_22 as integer
+   field field_23 as integer
 .
 
 
@@ -109,7 +111,6 @@ function F_Date_Format returns character (input ip_date as date) :
 END FUNCTION. /*F_Date_Format*/
 */
 
-/*AC*/
 function F_Date_Format returns character (input ip_date as date) :              
                                                                         
    define variable v_date    as character no-undo.   
@@ -206,7 +207,9 @@ repeat:
    define stream file_csv.
    output stream file_csv to value (v_file).
 
-   for each tt_output :
+   for each tt_output 
+   where field_22 = 1
+   :
       put stream file_csv unformatted 
          field_1    v_file_sp
          field_2    v_file_sp
@@ -228,10 +231,64 @@ repeat:
          field_18   v_file_sp
          field_19   v_file_sp
          field_20   v_file_sp
-         field_21   
+         field_21    
       skip.
-
    end.
+   for each tt_output 
+   where field_22 = 2
+   :
+      put stream file_csv unformatted 
+         field_1    v_file_sp
+         field_2    v_file_sp
+         field_3    v_file_sp
+         field_4    v_file_sp
+         field_5    v_file_sp
+         field_6    v_file_sp
+         field_7    v_file_sp
+         field_8    v_file_sp
+         field_9    v_file_sp
+         field_10   v_file_sp
+         field_11   v_file_sp
+         field_12   v_file_sp
+         field_13   v_file_sp
+         field_14   v_file_sp
+         field_15   v_file_sp
+         field_16   v_file_sp
+         field_17   v_file_sp
+         field_18   v_file_sp
+         field_19   v_file_sp
+         field_20   v_file_sp
+         field_21    
+      skip.
+   end.
+   for each tt_output 
+   where field_22 = 3
+   :
+      put stream file_csv unformatted 
+         field_1    v_file_sp
+         field_2    v_file_sp
+         field_3    v_file_sp
+         field_4    v_file_sp
+         field_5    v_file_sp
+         field_6    v_file_sp
+         field_7    v_file_sp
+         field_8    v_file_sp
+         field_9    v_file_sp
+         field_10   v_file_sp
+         field_11   v_file_sp
+         field_12   v_file_sp
+         field_13   v_file_sp
+         field_14   v_file_sp
+         field_15   v_file_sp
+         field_16   v_file_sp
+         field_17   v_file_sp
+         field_18   v_file_sp
+         field_19   v_file_sp
+         field_20   v_file_sp
+         field_21    
+      skip.
+   end.
+
 
    output stream file_csv close.
 
@@ -242,7 +299,8 @@ end.
 
 procedure add_row :
 
-   define input parameter i_arr_line as character extent 21.
+   define input parameter i_arr_line as character extent 23.
+   
 
    create tt_output.
 
@@ -267,6 +325,8 @@ procedure add_row :
    tt_output.field_19 = i_arr_line[19].
    tt_output.field_20 = i_arr_line[20].
    tt_output.field_21 = i_arr_line[21].
+   tt_output.field_22  = decimal(i_arr_line[22]).
+ 
 
 end.
 procedure search_data :
@@ -275,7 +335,7 @@ procedure search_data :
    define variable v_subaccount as character.
    define variable v_currency_code as character.
    define variable file_name as character.
-   define variable arr_line as character extent 21.
+   define variable arr_line as character extent 23.
    define input parameter i_exp as character.
    define buffer zz_cinvoice for CInvoice.
    define buffer xx_cinvoice for Cinvoice.
@@ -314,9 +374,6 @@ procedure search_data :
       journal_t = "ZZZZZZZZ"
       .
    end.
-
-
-
 
 
    for each CInvoice  exclusive-lock        
@@ -439,9 +496,9 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
          
          
          
-            find first GL 
-            where GL.GL_ID  = Postingline.GL_ID
-            no-lock no-error.
+         find first GL 
+         where GL.GL_ID  = Postingline.GL_ID
+         no-lock no-error.
 
          if (GL.GLTypeCode = "SYSTEM" and GL.GLSystemTypeCode = "CIREC") then do:
 
@@ -523,17 +580,22 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
 
             arr_line[21] = "".
 
+            
+            
             for each CInvoiceVat                                                
             where CInvoicevat.CInvoice_ID = CInvoice.CInvoice_ID                            
             no-lock:
-               if (GL.GLTypeCode = "VAT" /*and GL.GL_ID = CInvoiceVat.NormalTaxGL_ID*/) then do:
-                     find first vat 
-                     where CInvoiceVat.Vat_ID = Vat.Vat_ID
-                     no-lock no-error.
-                     if available vat then  arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
-                     arr_line[4] = "G".
-                     run add_row(input arr_line).
-                     arr_line[21] = "".
+               if (GL.GLTypeCode = "VAT"  and GL.GL_ID = CInvoiceVat.NormalTaxGL_ID ) then do:
+
+                  find first vat
+                  where CInvoiceVat.Vat_ID = Vat.Vat_ID
+                  no-lock no-error.
+                  if available vat then arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
+     
+                 
+                  arr_line[4] = "G".
+                  arr_line[22] = "2".
+                  arr_line[21] = "".
                      
                end.
 
@@ -543,13 +605,17 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
                   if (CInvoiceVat.CInvoiceVatVatBaseDebitTC - CInvoiceVat.CInvoiceVatVatBaseCreditTC) = 
                   (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC)
                   then do:
-                  
+                     
                      find first vat 
                      where CInvoiceVat.Vat_ID = Vat.Vat_ID
                      no-lock no-error.
                      if available vat then arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
 
                   end.
+                  if arr_line[3] begins ("6") 
+                  or  arr_line[3] begins ("7") 
+                  then arr_line[22] = "1" .
+                  else arr_line[22] = "3" .
                end.
             end.
 
@@ -582,6 +648,11 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
                no-lock no-error.                                                          
                if available vat then arr_line[17] = "D" + vat.VatCode + " " + "-" + " " + vat.VatDescription.*/
 
+               if arr_line[3] begins ("6") 
+               or  arr_line[3] begins ("7") 
+               then arr_line[22] = "1" .
+               else arr_line[22] = "3" .
+
                run add_row(input arr_line).
                Cinvoice.CustomCombo0 = "exp" .  
 
@@ -599,6 +670,7 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
                      arr_line[6] = CostCentre.CostCentreCode. else arr_line[6] = "".
 
                arr_line[21] = "AXE1".
+               
                run add_row(input arr_line).
 
                if (available Project) then
@@ -620,6 +692,10 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
                where vat.vat_ID = PostingVat.vat_ID                            
                no-lock no-error.                                                          
                if available vat then arr_line[17] = "D" + vat.VatCode + " " + "-" + " " + vat.VatDescription.*/
+               if arr_line[3] begins ("6") 
+               or  arr_line[3] begins ("7") 
+               then arr_line[22] = "1" .
+               else arr_line[22] = "3" .
 
                run add_row(input arr_line).
                Cinvoice.CustomCombo0 = "exp". 
@@ -650,6 +726,10 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
 
             if (GL.GLTypeCode = "VAT") then do:
             arr_line[4] = "G".
+            if decimal(arr_line[19]) <> 0 
+            then do :
+               run add_row(input arr_line).
+               Cinvoice.CustomCombo0 = "exp".
             //arr_line[17] = "".
             /*for each PostingVat  
             where PostingVat.PostingLine_ID = PostingLine.PostingLine_ID
@@ -663,20 +743,25 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
                   run add_row(input arr_line).
 
             end.*/
-            Cinvoice.CustomCombo0 = "exp". 
+             
+            end.
             end.
 
-            
-
          if GL.GLTypeCode = "CREDITORCONTROL" then do:
-               arr_line[5]   =  v_subaccount.
-               /*ACarr_line[5] = string("F" + Creditor.CreditorCode).*/
-               arr_line[4] = "X".
-               arr_line[12] = "VI".
-               arr_line[17] = "".
-               arr_line[13] = F_Date_Format(CInvoice.CInvoiceDueDate).
-               run add_row(input arr_line).
-               Cinvoice.CustomCombo0 = "exp" .  
+            arr_line[5]   =  v_subaccount.
+            /*arr_line[5] = string("F" + Creditor.CreditorCode).*/
+            arr_line[4] = "X".
+            arr_line[12] = "VI".
+            arr_line[17] = "".
+            arr_line[13] = F_Date_Format(CInvoice.CInvoiceDueDate).
+
+            if arr_line[3] begins ("6") 
+            or  arr_line[3] begins ("7") 
+            then arr_line[22] = "1" .
+            else arr_line[22] = "3" .
+
+            run add_row(input arr_line).
+            Cinvoice.CustomCombo0 = "exp" .  
          end.
 
 
