@@ -78,6 +78,7 @@ define temp-table tt_output
    field field_18 as character
    field field_19 as character
    field field_20 as character
+   field field_21 as integer
 .
 define temp-table tt_test 
    field tt_field_1 as character 
@@ -276,7 +277,7 @@ _____                        _
 *******************************************************************************/ 
 PROCEDURE add_row :
          
-   define input parameter i_arr_line as character extent 20.
+   define input parameter i_arr_line as character extent 21.
 
    create tt_output.
 
@@ -300,6 +301,7 @@ PROCEDURE add_row :
    tt_output.field_18 = i_arr_line[18].
    tt_output.field_19 = i_arr_line[19].
    tt_output.field_20 = i_arr_line[20].
+   tt_output.field_21  = decimal(i_arr_line[21]).
 
 END PROCEDURE. /*PROCEDURE add_row*/
 
@@ -323,7 +325,7 @@ PROCEDURE search_data :
    define variable file_name       as character    no-undo.
    define variable arr as character extent.
 
-   define variable arr_line as character extent 20.
+   define variable arr_line as character extent 21.
    define variable nbr_zero as integer   no-undo.
    define variable i        as integer   no-undo.
    define variable voucher  as character no-undo.
@@ -445,9 +447,10 @@ PROCEDURE search_data :
             leave. 
          end.
          find first vat 
-             where DInvoiceVat.Vat_ID = Vat.Vat_ID
-                  no-lock no-error.
-                  if available vat then  b = string("C" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
+         where DInvoiceVat.Vat_ID = Vat.Vat_ID
+         no-lock no-error.
+         if available vat then  b = string("C" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
+
       end.
       for each DInvoicePosting no-lock
       where DInvoicePosting.DInvoice_ID = DInvoice.DInvoice_ID
@@ -518,8 +521,7 @@ PROCEDURE search_data :
                   no-lock no-error.
                   if available vat then  arr_line[17] = string("C" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
                   arr_line[4] = "G".
-                  run add_row(input arr_line).
-                  
+                  arr_line[21] = "2".
             end.
             else if (GL.GLTypeCode = "STANDARD") then do:
 
@@ -542,6 +544,11 @@ PROCEDURE search_data :
             run add_row(input arr_line).
             Dinvoice.CustomCombo0 = "exp" .
             arr_line[4] = "A".
+
+            if arr_line[3] begins ("6") 
+            or  arr_line[3] begins ("7") 
+            then arr_line[21] = "1" .
+            else arr_line[21] = "3" .
 
          end. /*if (GL.GLTypeCode = "STANDARD")*/
          
@@ -570,8 +577,13 @@ PROCEDURE search_data :
             arr_line[17] = "".
             arr_line[4] = "G".
 
-            
-            Dinvoice.CustomCombo0 = "exp" .
+            if decimal(arr_line[19]) <> 0 
+            then do :
+
+               run add_row(input arr_line). 
+               Dinvoice.CustomCombo0 = "exp" .
+
+            end. /*iif decimal(arr_line[19]) <> 0 .. */
 
          end. /*if (GL.GLTypeCode = "VAT") then do:*/
 
@@ -583,6 +595,11 @@ PROCEDURE search_data :
             arr_line[12] = "VI".
             arr_line[17] = "".
             arr_line[13] = F_Date_Format(DInvoice.DInvoiceDueDate).
+
+            if arr_line[3] begins ("6") 
+            or arr_line[3] begins ("7") then arr_line[21] = "1" .
+            else arr_line[21] = "3" .
+            
             run add_row(input arr_line).
             Dinvoice.CustomCombo0 = "exp" .
 
@@ -600,7 +617,65 @@ PROCEDURE P_generate_file:
    define input parameter  ip_file_sp as character no-undo.
    output stream file_csv to value (v_file).
    
-   for each tt_output :
+   for each tt_output 
+   where field_21 = 1 :
+
+      put stream file_csv unformatted 
+         field_1    ip_file_sp
+         field_2    ip_file_sp
+         field_3    ip_file_sp
+         field_4    ip_file_sp
+         field_5    ip_file_sp
+         field_6    ip_file_sp
+         field_7    ip_file_sp
+         field_8    ip_file_sp
+         field_9    ip_file_sp
+         field_10   ip_file_sp
+         field_11   ip_file_sp
+         field_12   ip_file_sp
+         field_13   ip_file_sp
+         field_14   ip_file_sp
+         field_15   ip_file_sp
+         field_16   ip_file_sp
+         field_17   ip_file_sp
+         field_18   ip_file_sp
+         field_19   ip_file_sp
+         field_20     
+      skip.
+         
+   end. /*for each tt_output */
+
+   for each tt_output 
+   where field_21 = 2 :
+
+      put stream file_csv unformatted 
+         field_1    ip_file_sp
+         field_2    ip_file_sp
+         field_3    ip_file_sp
+         field_4    ip_file_sp
+         field_5    ip_file_sp
+         field_6    ip_file_sp
+         field_7    ip_file_sp
+         field_8    ip_file_sp
+         field_9    ip_file_sp
+         field_10   ip_file_sp
+         field_11   ip_file_sp
+         field_12   ip_file_sp
+         field_13   ip_file_sp
+         field_14   ip_file_sp
+         field_15   ip_file_sp
+         field_16   ip_file_sp
+         field_17   ip_file_sp
+         field_18   ip_file_sp
+         field_19   ip_file_sp
+         field_20     
+      skip.
+         
+   end. /*for each tt_output */
+
+   for each tt_output 
+   where field_21 = 3 :
+
       put stream file_csv unformatted 
          field_1    ip_file_sp
          field_2    ip_file_sp

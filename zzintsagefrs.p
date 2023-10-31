@@ -22,7 +22,6 @@ define temp-table tt_output
    field field_20 as character
    field field_21 as character
    field field_22 as integer
-   field field_23 as integer
 .
 
 
