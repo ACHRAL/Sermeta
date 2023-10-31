@@ -486,7 +486,8 @@ PROCEDURE search_data :
          arr_line[9]  = string(DInvoice.DInvoicePostingYear) + "/" + string(Journal.JournalCode) + "/" + voucher.
          arr_line[16] = string(DInvoice.DInvoicePostingYear) + "/" + string(Journal.JournalCode) + "/" + voucher.
             
-         arr_line[10] = "C" + Debtor.DebtorCode.
+         /*arr_line[10] = "C" + Debtor.DebtorCode.*/
+         arr_line[10] = v_subaccount.
          arr_line[11] = v_BR_name.
 
          arr_line[12] = "".
