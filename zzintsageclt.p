@@ -517,12 +517,12 @@ PROCEDURE search_data :
          no-lock:
             if (GL.GLTypeCode = "VAT" and GL.GL_ID = DInvoiceVat.NormalTaxGL_ID) then do:
                
-                  find first vat 
-                  where DInvoiceVat.Vat_ID = Vat.Vat_ID
-                  no-lock no-error.
-                  if available vat then  arr_line[17] = string("C" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
-                  arr_line[4] = "G".
-                  arr_line[21] = "2".
+               find first vat 
+               where DInvoiceVat.Vat_ID = Vat.Vat_ID
+               no-lock no-error.
+               if available vat then  arr_line[17] = string("C" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
+               arr_line[4] = "G".
+               arr_line[21] = "1".
             end.
             else if (GL.GLTypeCode = "STANDARD") then do:
 
@@ -548,8 +548,7 @@ PROCEDURE search_data :
 
             if arr_line[3] begins ("6") 
             or  arr_line[3] begins ("7") 
-            then arr_line[21] = "1" .
-            else arr_line[21] = "3" .
+            then arr_line[21] = "2" .
 
          end. /*if (GL.GLTypeCode = "STANDARD")*/
          
@@ -597,9 +596,7 @@ PROCEDURE search_data :
             arr_line[17] = "".
             arr_line[13] = F_Date_Format(DInvoice.DInvoiceDueDate).
 
-            if arr_line[3] begins ("6") 
-            or arr_line[3] begins ("7") then arr_line[21] = "1" .
-            else arr_line[21] = "3" .
+            arr_line[21] = "3" .
             
             run add_row(input arr_line).
             Dinvoice.CustomCombo0 = "exp" .
@@ -619,7 +616,7 @@ PROCEDURE P_generate_file:
    output stream file_csv to value (v_file).
    
    for each tt_output 
-   where field_21 = 1 :
+   where field_4 = 1 :
 
       put stream file_csv unformatted 
          field_1    ip_file_sp
@@ -643,9 +640,12 @@ PROCEDURE P_generate_file:
          field_19   ip_file_sp
          field_20     
       skip.
-         
+      
    end. /*for each tt_output */
+   output stream file_csv close.
 
+
+   output stream file_csv to value (v_file).
    for each tt_output 
    where field_21 = 2 :
 
@@ -673,7 +673,9 @@ PROCEDURE P_generate_file:
       skip.
          
    end. /*for each tt_output */
+   output stream file_csv close.
 
+   output stream file_csv to value (v_file).
    for each tt_output 
    where field_21 = 3 :
 
@@ -701,7 +703,7 @@ PROCEDURE P_generate_file:
       skip.
          
    end. /*for each tt_output */
-         
    output stream file_csv close.
+   
 
 END PROCEDURE. /*P_generate_file*/
