@@ -547,7 +547,11 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
 
                   for first APMatchingLN where APMatchingLN.PvoPostingLine_ID = PostingLine.PostingLine_ID:
                      
-                  arr_line[3] = string(APMatchingLN.Division_ID).
+                     find first Division
+                     where Division.Division_ID = APMatchingLN.Division_ID
+                     no-lock no-error.
+                     if available Division then 
+                     arr_line[3] = string(Division.DivisionCode).
 
                   end.
                end.
