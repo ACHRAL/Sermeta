@@ -202,91 +202,109 @@ repeat:
 
    
    v_file =  v_op_path +  v_file  .
-
+   define buffer b_tt_output for tt_output.
    define stream file_csv.
    output stream file_csv to value (v_file).
+   for each tt_output 
+   break by field_22 :
 
-   for each tt_output 
-   where field_22 = 1
-   :
-      put stream file_csv unformatted 
-         field_1    v_file_sp
-         field_2    v_file_sp
-         field_3    v_file_sp
-         field_4    v_file_sp
-         field_5    v_file_sp
-         field_6    v_file_sp
-         field_7    v_file_sp
-         field_8    v_file_sp
-         field_9    v_file_sp
-         field_10   v_file_sp
-         field_11   v_file_sp
-         field_12   v_file_sp
-         field_13   v_file_sp
-         field_14   v_file_sp
-         field_15   v_file_sp
-         field_16   v_file_sp
-         field_17   v_file_sp
-         field_18   v_file_sp
-         field_19   v_file_sp
-         field_20   v_file_sp
-         field_21    
-      skip.
+      IF FIRST-OF(tt_output.field_22) then do:
+      for each b_tt_output 
+      where b_tt_output.field_22 = tt_output.field_22
+      and b_tt_output.field_4 <> "V" 
+      and b_tt_output.field_4 <> "X":
+
+         put stream file_csv unformatted 
+         b_tt_output.field_1    v_file_sp
+         b_tt_output.field_2    v_file_sp
+         b_tt_output.field_3    v_file_sp
+         b_tt_output.field_4    v_file_sp
+         b_tt_output.field_5    v_file_sp
+         b_tt_output.field_6    v_file_sp
+         b_tt_output.field_7    v_file_sp
+         b_tt_output.field_8    v_file_sp
+         b_tt_output.field_9    v_file_sp
+         b_tt_output.field_10   v_file_sp
+         b_tt_output.field_11   v_file_sp
+         b_tt_output.field_12   v_file_sp
+         b_tt_output.field_13   v_file_sp
+         b_tt_output.field_14   v_file_sp
+         b_tt_output.field_15   v_file_sp
+         b_tt_output.field_16   v_file_sp
+         b_tt_output.field_17   v_file_sp
+         b_tt_output.field_18   v_file_sp
+         b_tt_output.field_19   v_file_sp
+         b_tt_output.field_20   v_file_sp
+         b_tt_output.field_21    
+         skip.
+         
+      end.
+
+      for each b_tt_output 
+      where b_tt_output.field_22 = tt_output.field_22
+      and b_tt_output.field_4 = "V":
+
+         put stream file_csv unformatted 
+         b_tt_output.field_1    v_file_sp
+         b_tt_output.field_2    v_file_sp
+         b_tt_output.field_3    v_file_sp
+         "G"                    v_file_sp
+         b_tt_output.field_5    v_file_sp
+         b_tt_output.field_6    v_file_sp
+         b_tt_output.field_7    v_file_sp
+         b_tt_output.field_8    v_file_sp
+         b_tt_output.field_9    v_file_sp
+         b_tt_output.field_10   v_file_sp
+         b_tt_output.field_11   v_file_sp
+         b_tt_output.field_12   v_file_sp
+         b_tt_output.field_13   v_file_sp
+         b_tt_output.field_14   v_file_sp
+         b_tt_output.field_15   v_file_sp
+         b_tt_output.field_16   v_file_sp
+         b_tt_output.field_17   v_file_sp
+         b_tt_output.field_18   v_file_sp
+         b_tt_output.field_19   v_file_sp
+         b_tt_output.field_20   v_file_sp
+         b_tt_output.field_21    
+         skip.
+         
+      end.
+
+      for each b_tt_output 
+      where b_tt_output.field_22 = tt_output.field_22
+      and b_tt_output.field_4 = "X":
+
+         put stream file_csv unformatted 
+         b_tt_output.field_1    v_file_sp
+         b_tt_output.field_2    v_file_sp
+         b_tt_output.field_3    v_file_sp
+         b_tt_output.field_4    v_file_sp
+         b_tt_output.field_5    v_file_sp
+         b_tt_output.field_6    v_file_sp
+         b_tt_output.field_7    v_file_sp
+         b_tt_output.field_8    v_file_sp
+         b_tt_output.field_9    v_file_sp
+         b_tt_output.field_10   v_file_sp
+         b_tt_output.field_11   v_file_sp
+         b_tt_output.field_12   v_file_sp
+         b_tt_output.field_13   v_file_sp
+         b_tt_output.field_14   v_file_sp
+         b_tt_output.field_15   v_file_sp
+         b_tt_output.field_16   v_file_sp
+         b_tt_output.field_17   v_file_sp
+         b_tt_output.field_18   v_file_sp
+         b_tt_output.field_19   v_file_sp
+         b_tt_output.field_20   v_file_sp
+         b_tt_output.field_21    
+         skip.
+         
+      end.
+
+
+
    end.
-   for each tt_output 
-   where field_22 = 2
-   :
-      put stream file_csv unformatted 
-         field_1    v_file_sp
-         field_2    v_file_sp
-         field_3    v_file_sp
-         field_4    v_file_sp
-         field_5    v_file_sp
-         field_6    v_file_sp
-         field_7    v_file_sp
-         field_8    v_file_sp
-         field_9    v_file_sp
-         field_10   v_file_sp
-         field_11   v_file_sp
-         field_12   v_file_sp
-         field_13   v_file_sp
-         field_14   v_file_sp
-         field_15   v_file_sp
-         field_16   v_file_sp
-         field_17   v_file_sp
-         field_18   v_file_sp
-         field_19   v_file_sp
-         field_20   v_file_sp
-         field_21    
-      skip.
    end.
-   for each tt_output 
-   where field_22 = 3
-   :
-      put stream file_csv unformatted 
-         field_1    v_file_sp
-         field_2    v_file_sp
-         field_3    v_file_sp
-         field_4    v_file_sp
-         field_5    v_file_sp
-         field_6    v_file_sp
-         field_7    v_file_sp
-         field_8    v_file_sp
-         field_9    v_file_sp
-         field_10   v_file_sp
-         field_11   v_file_sp
-         field_12   v_file_sp
-         field_13   v_file_sp
-         field_14   v_file_sp
-         field_15   v_file_sp
-         field_16   v_file_sp
-         field_17   v_file_sp
-         field_18   v_file_sp
-         field_19   v_file_sp
-         field_20   v_file_sp
-         field_21    
-      skip.
-   end.
+   
 
 
    output stream file_csv close.
@@ -335,6 +353,7 @@ procedure search_data :
    define variable v_currency_code as character.
    define variable file_name as character.
    define variable arr_line as character extent 23.
+   define variable num_line as integer initial 0.
    define input parameter i_exp as character.
    define buffer zz_cinvoice for CInvoice.
    define buffer xx_cinvoice for Cinvoice.
@@ -480,10 +499,12 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
             leave. 
          end.
          find first vat 
-               where CInvoiceVat.Vat_ID = Vat.Vat_ID
-                  no-lock no-error.
-                  if available vat then  b = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
+         where CInvoiceVat.Vat_ID = Vat.Vat_ID
+         no-lock no-error.
+         if available vat then  b = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
       end.
+
+      num_line = num_line + 1.
 
       for each CInvoicePosting no-lock
       where CInvoicePosting.CInvoice_ID = CInvoice.CInvoice_ID
@@ -578,6 +599,7 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
             arr_line[20] = F_Date_Format(CInvoice.CInvoicePostingDate).
 
             arr_line[21] = "".
+            arr_line[22] = string(num_line).
 
             
             
@@ -593,7 +615,6 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
      
                  
                   arr_line[4] = "G".
-                  arr_line[22] = "2".
                   arr_line[21] = "".
                      
                end.
@@ -611,10 +632,6 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
                      if available vat then arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
 
                   end.
-                  if arr_line[3] begins ("6") 
-                  or  arr_line[3] begins ("7") 
-                  then arr_line[22] = "1" .
-                  else arr_line[22] = "3" .
                end.
             end.
 
@@ -647,10 +664,7 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
                no-lock no-error.                                                          
                if available vat then arr_line[17] = "D" + vat.VatCode + " " + "-" + " " + vat.VatDescription.*/
 
-               if arr_line[3] begins ("6") 
-               or  arr_line[3] begins ("7") 
-               then arr_line[22] = "1" .
-               else arr_line[22] = "3" .
+             
 
                run add_row(input arr_line).
                Cinvoice.CustomCombo0 = "exp" .  
@@ -691,10 +705,7 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
                where vat.vat_ID = PostingVat.vat_ID                            
                no-lock no-error.                                                          
                if available vat then arr_line[17] = "D" + vat.VatCode + " " + "-" + " " + vat.VatDescription.*/
-               if arr_line[3] begins ("6") 
-               or  arr_line[3] begins ("7") 
-               then arr_line[22] = "1" .
-               else arr_line[22] = "3" .
+               
 
                run add_row(input arr_line).
                Cinvoice.CustomCombo0 = "exp". 
@@ -724,7 +735,7 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
             end.
 
             if (GL.GLTypeCode = "VAT") then do:
-            arr_line[4] = "G".
+            arr_line[4] = "V".
             if decimal(arr_line[19]) <> 0 
             then do :
                run add_row(input arr_line).
@@ -754,10 +765,6 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
             arr_line[17] = "".
             arr_line[13] = F_Date_Format(CInvoice.CInvoiceDueDate).
 
-            if arr_line[3] begins ("6") 
-            or  arr_line[3] begins ("7") 
-            then arr_line[22] = "1" .
-            else arr_line[22] = "3" .
 
             run add_row(input arr_line).
             Cinvoice.CustomCombo0 = "exp" .  

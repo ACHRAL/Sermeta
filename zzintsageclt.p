@@ -77,12 +77,9 @@ define temp-table tt_output
    field field_17 as character format "x(30)"
    field field_18 as character
    field field_19 as character
-   field field_20 as character
-   field field_21 as integer
+   field field_20 as integer
 .
-define temp-table tt_test 
-   field tt_field_1 as character 
-.
+
 
 
 /*******************************************************************************
@@ -300,8 +297,7 @@ PROCEDURE add_row :
    tt_output.field_17 = i_arr_line[17].
    tt_output.field_18 = i_arr_line[18].
    tt_output.field_19 = i_arr_line[19].
-   tt_output.field_20 = i_arr_line[20].
-   tt_output.field_21  = decimal(i_arr_line[21]).
+   tt_output.field_21  = decimal(i_arr_line[20]).
 
 END PROCEDURE. /*PROCEDURE add_row*/
 
@@ -316,7 +312,7 @@ PROCEDURE search_data :
    define input parameter ip_ad_fac_to    like Debtor.DebtorCode        no-undo.
    define input parameter ip_entity_fr    like Company.CompanyCode      no-undo.
    define input parameter ip_entity_to    like Company.CompanyCode      no-undo.
-   
+   define variable num_line as integer initial 0.
    
    
    define  variable v_BR_name  like BusinessRelation.BusinessRelationname1 no-undo.
@@ -452,6 +448,9 @@ PROCEDURE search_data :
          if available vat then  b = string("C" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
 
       end.
+
+      num_line = num_line + 1.
+
       for each DInvoicePosting no-lock
       where DInvoicePosting.DInvoice_ID = DInvoice.DInvoice_ID
       ,first Posting no-lock                                                    
@@ -510,6 +509,7 @@ PROCEDURE search_data :
          
          if (decimal(arr_line[19]) < 0) then
          arr_line[19] = string(-1 * decimal(arr_line[19])).
+         arr_line[20] = string(num_line).
 
 
          for each DInvoiceVat                                                
@@ -522,7 +522,6 @@ PROCEDURE search_data :
                no-lock no-error.
                if available vat then  arr_line[17] = string("C" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
                arr_line[4] = "G".
-               arr_line[21] = "1".
             end.
             else if (GL.GLTypeCode = "STANDARD") then do:
 
@@ -546,9 +545,7 @@ PROCEDURE search_data :
             Dinvoice.CustomCombo0 = "exp" .
             arr_line[4] = "A".
 
-            if arr_line[3] begins ("6") 
-            or  arr_line[3] begins ("7") 
-            then arr_line[21] = "2" .
+            
 
          end. /*if (GL.GLTypeCode = "STANDARD")*/
          
@@ -575,7 +572,7 @@ PROCEDURE search_data :
          if (GL.GLTypeCode = "VAT") then do:
             
             arr_line[17] = "".
-            arr_line[4] = "G".
+            arr_line[4] = "V".
 
             if decimal(arr_line[19]) <> 0 
             then do :
@@ -596,7 +593,6 @@ PROCEDURE search_data :
             arr_line[17] = "".
             arr_line[13] = F_Date_Format(DInvoice.DInvoiceDueDate).
 
-            arr_line[21] = "3" .
             
             run add_row(input arr_line).
             Dinvoice.CustomCombo0 = "exp" .
@@ -616,93 +612,98 @@ PROCEDURE P_generate_file:
    output stream file_csv to value (v_file).
    
    for each tt_output 
-   where field_4 = 1 :
+   break by field_20 :
 
-      put stream file_csv unformatted 
-         field_1    ip_file_sp
-         field_2    ip_file_sp
-         field_3    ip_file_sp
-         field_4    ip_file_sp
-         field_5    ip_file_sp
-         field_6    ip_file_sp
-         field_7    ip_file_sp
-         field_8    ip_file_sp
-         field_9    ip_file_sp
-         field_10   ip_file_sp
-         field_11   ip_file_sp
-         field_12   ip_file_sp
-         field_13   ip_file_sp
-         field_14   ip_file_sp
-         field_15   ip_file_sp
-         field_16   ip_file_sp
-         field_17   ip_file_sp
-         field_18   ip_file_sp
-         field_19   ip_file_sp
-         field_20     
-      skip.
-      
-   end. /*for each tt_output */
-   output stream file_csv close.
+      IF FIRST-OF(tt_output.field_20) then do:
+      for each b_tt_output 
+      where b_tt_output.field_20 = tt_output.field_20
+      and b_tt_output.field_4 <> "V" 
+      and b_tt_output.field_4 <> "X":
 
-
-   output stream file_csv to value (v_file).
-   for each tt_output 
-   where field_21 = 2 :
-
-      put stream file_csv unformatted 
-         field_1    ip_file_sp
-         field_2    ip_file_sp
-         field_3    ip_file_sp
-         field_4    ip_file_sp
-         field_5    ip_file_sp
-         field_6    ip_file_sp
-         field_7    ip_file_sp
-         field_8    ip_file_sp
-         field_9    ip_file_sp
-         field_10   ip_file_sp
-         field_11   ip_file_sp
-         field_12   ip_file_sp
-         field_13   ip_file_sp
-         field_14   ip_file_sp
-         field_15   ip_file_sp
-         field_16   ip_file_sp
-         field_17   ip_file_sp
-         field_18   ip_file_sp
-         field_19   ip_file_sp
-         field_20     
-      skip.
+         put stream file_csv unformatted 
+         b_tt_output.field_1    v_file_sp
+         b_tt_output.field_2    v_file_sp
+         b_tt_output.field_3    v_file_sp
+         b_tt_output.field_4    v_file_sp
+         b_tt_output.field_5    v_file_sp
+         b_tt_output.field_6    v_file_sp
+         b_tt_output.field_7    v_file_sp
+         b_tt_output.field_8    v_file_sp
+         b_tt_output.field_9    v_file_sp
+         b_tt_output.field_10   v_file_sp
+         b_tt_output.field_11   v_file_sp
+         b_tt_output.field_12   v_file_sp
+         b_tt_output.field_13   v_file_sp
+         b_tt_output.field_14   v_file_sp
+         b_tt_output.field_15   v_file_sp
+         b_tt_output.field_16   v_file_sp
+         b_tt_output.field_17   v_file_sp
+         b_tt_output.field_18   v_file_sp
+         b_tt_output.field_19     
+         skip.
          
-   end. /*for each tt_output */
-   output stream file_csv close.
+      end.
 
-   output stream file_csv to value (v_file).
-   for each tt_output 
-   where field_21 = 3 :
+      for each b_tt_output 
+      where b_tt_output.field_20 = tt_output.field_20
+      and b_tt_output.field_4 = "V":
 
-      put stream file_csv unformatted 
-         field_1    ip_file_sp
-         field_2    ip_file_sp
-         field_3    ip_file_sp
-         field_4    ip_file_sp
-         field_5    ip_file_sp
-         field_6    ip_file_sp
-         field_7    ip_file_sp
-         field_8    ip_file_sp
-         field_9    ip_file_sp
-         field_10   ip_file_sp
-         field_11   ip_file_sp
-         field_12   ip_file_sp
-         field_13   ip_file_sp
-         field_14   ip_file_sp
-         field_15   ip_file_sp
-         field_16   ip_file_sp
-         field_17   ip_file_sp
-         field_18   ip_file_sp
-         field_19   ip_file_sp
-         field_20     
-      skip.
+         put stream file_csv unformatted 
+         b_tt_output.field_1    v_file_sp
+         b_tt_output.field_2    v_file_sp
+         b_tt_output.field_3    v_file_sp
+         "G"                    v_file_sp
+         b_tt_output.field_5    v_file_sp
+         b_tt_output.field_6    v_file_sp
+         b_tt_output.field_7    v_file_sp
+         b_tt_output.field_8    v_file_sp
+         b_tt_output.field_9    v_file_sp
+         b_tt_output.field_10   v_file_sp
+         b_tt_output.field_11   v_file_sp
+         b_tt_output.field_12   v_file_sp
+         b_tt_output.field_13   v_file_sp
+         b_tt_output.field_14   v_file_sp
+         b_tt_output.field_15   v_file_sp
+         b_tt_output.field_16   v_file_sp
+         b_tt_output.field_17   v_file_sp
+         b_tt_output.field_18   v_file_sp
+         b_tt_output.field_19      
+         skip.
          
-   end. /*for each tt_output */
+      end.
+
+      for each b_tt_output 
+      where b_tt_output.field_20 = tt_output.field_20
+      and b_tt_output.field_4 = "X":
+
+         put stream file_csv unformatted 
+         b_tt_output.field_1    v_file_sp
+         b_tt_output.field_2    v_file_sp
+         b_tt_output.field_3    v_file_sp
+         b_tt_output.field_4    v_file_sp
+         b_tt_output.field_5    v_file_sp
+         b_tt_output.field_6    v_file_sp
+         b_tt_output.field_7    v_file_sp
+         b_tt_output.field_8    v_file_sp
+         b_tt_output.field_9    v_file_sp
+         b_tt_output.field_10   v_file_sp
+         b_tt_output.field_11   v_file_sp
+         b_tt_output.field_12   v_file_sp
+         b_tt_output.field_13   v_file_sp
+         b_tt_output.field_14   v_file_sp
+         b_tt_output.field_15   v_file_sp
+         b_tt_output.field_16   v_file_sp
+         b_tt_output.field_17   v_file_sp
+         b_tt_output.field_18   v_file_sp
+         b_tt_output.field_19   
+         skip.
+         
+      end.
+
+
+
+   end.
+   end.
    output stream file_csv close.
    
 
