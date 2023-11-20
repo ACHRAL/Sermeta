@@ -297,7 +297,7 @@ PROCEDURE add_row :
    tt_output.field_17 = i_arr_line[17].
    tt_output.field_18 = i_arr_line[18].
    tt_output.field_19 = i_arr_line[19].
-   tt_output.field_21  = decimal(i_arr_line[20]).
+   tt_output.field_20  = decimal(i_arr_line[20]).
 
 END PROCEDURE. /*PROCEDURE add_row*/
 
@@ -608,9 +608,9 @@ END PROCEDURE. /*PROCEDURE search_data*/
 
 PROCEDURE P_generate_file:
 
-   define input parameter  ip_file_sp as character no-undo.
+   define input parameter  v_file_sp as character no-undo.
    output stream file_csv to value (v_file).
-   
+   define buffer b_tt_output for tt_output.
    for each tt_output 
    break by field_20 :
 

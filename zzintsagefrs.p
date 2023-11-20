@@ -541,6 +541,16 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
                no-lock no-error.
                if available Division then 
                arr_line[3] = string(Division.DivisionCode).
+
+               if (arr_line[3] = "" or decimal(arr_line[3]) = 0) then do:
+
+
+                  for first APMatchingLN where APMatchingLN.PvoPostingLine_ID = PostingLine.PostingLine_ID:
+                     
+                  arr_line[3] = string(APMatchingLN.Division_ID).
+
+                  end.
+               end.
             end.
                
             //R001
