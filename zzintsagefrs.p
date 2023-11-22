@@ -402,7 +402,7 @@ procedure search_data :
    and    CInvoice.CInvoicePostingYear       >=  date_f
    and    CInvoice.CInvoicePostingYear       <=  date_t
 
-and CInvoice.CInvoiceDueDate     >=  v_datev_from
+   and CInvoice.CInvoiceDueDate     >=  v_datev_from
    and    CInvoice.CInvoiceDueDate     <=  v_datev_to
    and    CInvoice.CInvoiceDate        >=  v_datef_from
    and    CInvoice.CInvoiceDate        <=  v_datef_to
@@ -535,26 +535,23 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
             arr_line[3] = GL.GLCode.
             
             if (string(GL.GLCode)  begins "408" OR string(GL.GLCode)  begins "9") then do:
-
-               find first Division
-               where Division.Division_ID = Postingline.Division_ID
-               no-lock no-error.
-               if available Division then 
-               arr_line[3] = string(Division.DivisionCode).
-
-               if (arr_line[3] = "" or decimal(arr_line[3]) = 0) then do:
+               define buffer zzGL for GL.
+               // find first Division
+               // where Division.Division_ID = Postingline.Division_ID
+               // no-lock no-error.
+               // if available Division then 
+               // arr_line[3] = string(Division.DivisionCode).
 
 
                   for first APMatchingLN where APMatchingLN.PvoPostingLine_ID = PostingLine.PostingLine_ID:
                      
-                     find first Division
-                     where Division.Division_ID = APMatchingLN.Division_ID
+                     find first zzGL
+                     where zzGL.GL_ID = APMatchingLN.GL_ID
                      no-lock no-error.
-                     if available Division then 
-                     arr_line[3] = string(Division.DivisionCode).
-
+                     if available zzGL then 
+                     arr_line[3] = string(zzGL.GLCode).
                   end.
-               end.
+
             end.
                
             //R001
@@ -635,9 +632,10 @@ and CInvoice.CInvoiceDueDate     >=  v_datev_from
 
                else if (GL.GLTypeCode = "STANDARD" or GL.GLTypeCode = "SYSTEM" ) then do:
 
-
-                  if (CInvoiceVat.CInvoiceVatVatBaseDebitTC - CInvoiceVat.CInvoiceVatVatBaseCreditTC) = 
-                  (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC)
+                  if (CInvoiceVat.CInvoiceVatVatBaseDebitTC - CInvoiceVat.CInvoiceVatVatBaseCreditTC) -
+                  (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) <= 0.01 
+                  and (CInvoiceVat.CInvoiceVatVatBaseDebitTC - CInvoiceVat.CInvoiceVatVatBaseCreditTC) -
+                  (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) >= (- 0.01 )
                   then do:
                      
                      find first vat 

@@ -544,7 +544,6 @@ PROCEDURE search_data :
             run add_row(input arr_line).
             Dinvoice.CustomCombo0 = "exp" .
             arr_line[4] = "A".
-
             
 
          end. /*if (GL.GLTypeCode = "STANDARD")*/
@@ -568,22 +567,28 @@ PROCEDURE search_data :
 
          end. /*for each CostCentre */
          
+         for each DInvoiceVat                                                
+         where Dinvoicevat.Dinvoice_iD = Dinvoice.Dinvoice_ID                            
+         no-lock:
+            if (GL.GLTypeCode = "VAT" ) then do:
+               
+               arr_line[17] = "".
+               arr_line[4] = "V".
+               
+               if decimal(arr_line[19]) <> 0 
+               then do :
+                  
+                  find first vat 
+                  where DInvoiceVat.Vat_ID = Vat.Vat_ID
+                  no-lock no-error.
+                  if available vat then  arr_line[17] = string("C" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
+                  run add_row(input arr_line). 
+                  Dinvoice.CustomCombo0 = "exp" .
 
-         if (GL.GLTypeCode = "VAT") then do:
-            
-            arr_line[17] = "".
-            arr_line[4] = "V".
+               end. /*iif decimal(arr_line[19]) <> 0 .. */
 
-            if decimal(arr_line[19]) <> 0 
-            then do :
-
-               run add_row(input arr_line). 
-               Dinvoice.CustomCombo0 = "exp" .
-
-            end. /*iif decimal(arr_line[19]) <> 0 .. */
-
-         end. /*if (GL.GLTypeCode = "VAT") then do:*/
-
+            end. /*if (GL.GLTypeCode = "VAT") then do:*/
+         end.
          if GL.GLTypeCode = "DEBTORCONTROL" then do:
 
             /*arr_line[5] = string("C" + Debtor.DebtorCode).*/
@@ -598,7 +603,7 @@ PROCEDURE search_data :
             Dinvoice.CustomCombo0 = "exp" .
 
          end. /*if GL.GLTypeCode = "DEBTORCONTROL" then do:*/
-
+         
       end. /* for each DInvoicePosting*/
 
    end. /*for each DInvoice */
