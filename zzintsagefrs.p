@@ -25,7 +25,6 @@ define temp-table tt_output
 .
 
 
-
 define  variable v_entity_from         as character   format "x(30)"              no-undo.
 define  variable v_entity_to           as character   format "x(30)"              no-undo.
 define  variable v_piece_from          as character   format "x(30)"              no-undo.
@@ -36,8 +35,8 @@ define  variable v_datef_from          like CInvoice.CInvoiceDueDate            
 define  variable v_datef_to            like CInvoice.CInvoiceDueDate                      no-undo.
 define  variable v_datev_from          like CInvoice.CInvoiceDueDate                      no-undo.
 define  variable v_datev_to            like CInvoice.CInvoiceDueDate                      no-undo.
-define  variable v_rexp                as logical     initial  no   no-undo.
-define  variable v_file                as character  format "x(60)"   no-undo.
+define  variable v_rexp                as logical     initial  no                 no-undo.
+define  variable v_file                as character  format "x(60)"               no-undo.
 define  variable v_op_path             as character                   no-undo.
 define  variable v_file_sp             as character initial ";"       no-undo.
 define  variable v_rexport             as     logical   initial  no           no-undo.
@@ -675,8 +674,6 @@ procedure search_data :
                   or (CInvoiceVat.CInvoiceVatVatBaseDebitTC - CInvoiceVat.CInvoiceVatVatBaseCreditTC) - 0.01 =
                   - (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) 
 
-
-
                   then do:
               
                      find first vat 
@@ -789,28 +786,26 @@ procedure search_data :
 
             end.
 
-            if (GL.GLTypeCode = "VAT") then do:
-            arr_line[4] = "V".
-            if decimal(arr_line[19]) <> 0 
-            then do :
-               run add_row(input arr_line).
-               Cinvoice.CustomCombo0 = "exp".
-            //arr_line[17] = "".
-            /*for each PostingVat  
+            for each postingvat 
             where PostingVat.PostingLine_ID = PostingLine.PostingLine_ID
-            no-lock :
-                  find first vat                                                              
-                  where vat.vat_ID = PostingVat.vat_ID                            
-                  no-lock no-error.
-                  
-                  if available vat then arr_line[17] = "D" + vat.VatCode + " " + "-" + " " + vat.VatDescription.
+            no-lock : 
+               if (GL.GLTypeCode = "VAT") then do:
 
-                  run add_row(input arr_line).
-
-            end.*/
-             
-            end.
-            end.
+                  arr_line[4] = "V".
+                  arr_line[17] = "".
+                  if decimal(arr_line[19]) <> 0 
+                  then do :   
+                     for each vat 
+                     where PostingVat.Vat_ID = Vat.Vat_ID
+                     no-lock :
+                        arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
+                        Cinvoice.CustomCombo0 = "exp" .
+                        run add_row(input arr_line). 
+                        
+                     end. /* for each vat */
+                  end. /*if decimal(arr_line[19]) <> 0 */
+               end. /*if (GL.GLTypeCode = "VAT") */
+            end. /*for each postingvat */
 
          if GL.GLTypeCode = "CREDITORCONTROL" then do:
             arr_line[5]   =  v_subaccount.
