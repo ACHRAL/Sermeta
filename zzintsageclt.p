@@ -42,7 +42,7 @@ define  variable v_invo_date_to  like   DInvoice.DInvoiceDate           no-undo.
 define  variable v_entity_fr     like   Company.CompanyCode             no-undo.
 define  variable v_entity_to     like   Company.CompanyCode             no-undo.
 define  variable v_op_path       as     character                       no-undo.
-define  variable v_rexport       as     logical   initial  yes           no-undo.
+define  variable v_rexport       as     logical   initial  no           no-undo.
 define  variable v_file          as     character format "x(60)"        no-undo.
 define stream file_csv. 
 
@@ -525,7 +525,52 @@ PROCEDURE search_data :
             end.
             else if (GL.GLTypeCode = "STANDARD") then do:
 
-               if (DInvoiceVat.DInvoiceVatVatBaseDebitTC - DInvoiceVat.DInvoiceVatVatBaseCreditTC) = (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC)
+               /*if (DInvoiceVat.DInvoiceVatVatBaseDebitTC - DInvoiceVat.DInvoiceVatVatBaseCreditTC) = (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC)*/
+
+               if ((DInvoiceVat.DInvoiceVatVatDebitTC - DInvoiceVat.DInvoiceVatVatCreditTC) -
+               (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) <= 0.01 
+               and (DInvoiceVat.DInvoiceVatVatDebitTC - DInvoiceVat.DInvoiceVatVatCreditTC) -
+               (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) >= (- 0.01 )) or 
+               (DInvoiceVat.DInvoiceVatVatDebitTC - DInvoiceVat.DInvoiceVatVatCreditTC) -
+               (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) = 0
+
+               or (DInvoiceVat.DInvoiceVatVatDebitTC - DInvoiceVat.DInvoiceVatVatCreditTC) =
+               (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) 
+               or (DInvoiceVat.DInvoiceVatVatDebitTC - DInvoiceVat.DInvoiceVatVatCreditTC) =
+               - (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC)
+
+               or (DInvoiceVat.DInvoiceVatVatDebitTC - DInvoiceVat.DInvoiceVatVatCreditTC) =
+               (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) + 0.01
+               or (DInvoiceVat.DInvoiceVatVatDebitTC - DInvoiceVat.DInvoiceVatVatCreditTC) =
+               - (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) - 0.01
+
+               or (DInvoiceVat.DInvoiceVatVatDebitTC - DInvoiceVat.DInvoiceVatVatCreditTC) + 0.01 =
+               (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC)
+               or (DInvoiceVat.DInvoiceVatVatDebitTC - DInvoiceVat.DInvoiceVatVatCreditTC) - 0.01 =
+               - (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) 
+
+               or ((DInvoiceVat.DInvoiceVatVatBaseDebitTC - DInvoiceVat.DInvoiceVatVatBaseCreditTC) -
+               (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) <= 0.01 
+               and (DInvoiceVat.DInvoiceVatVatBaseDebitTC - DInvoiceVat.DInvoiceVatVatBaseCreditTC) -
+               (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) >= (- 0.01 )) or 
+               (DInvoiceVat.DInvoiceVatVatBaseDebitTC - DInvoiceVat.DInvoiceVatVatBaseCreditTC) -
+               (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) = 0
+
+               or (DInvoiceVat.DInvoiceVatVatBaseDebitTC - DInvoiceVat.DInvoiceVatVatBaseCreditTC) =
+               (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) 
+               or (DInvoiceVat.DInvoiceVatVatBaseDebitTC - DInvoiceVat.DInvoiceVatVatBaseCreditTC) =
+               - (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC)
+
+               or (DInvoiceVat.DInvoiceVatVatBaseDebitTC - DInvoiceVat.DInvoiceVatVatBaseCreditTC) =
+               (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) + 0.01
+               or (DInvoiceVat.DInvoiceVatVatBaseDebitTC - DInvoiceVat.DInvoiceVatVatBaseCreditTC) =
+               - (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) - 0.01
+
+               or (DInvoiceVat.DInvoiceVatVatBaseDebitTC - DInvoiceVat.DInvoiceVatVatBaseCreditTC) + 0.01 =
+               (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC)
+               or (DInvoiceVat.DInvoiceVatVatBaseDebitTC - DInvoiceVat.DInvoiceVatVatBaseCreditTC) - 0.01 =
+               - (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC)
+
                then do:
                   find first vat 
                   where DInvoiceVat.Vat_ID = Vat.Vat_ID

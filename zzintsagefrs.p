@@ -631,19 +631,62 @@ procedure search_data :
                end.
 
                else if (GL.GLTypeCode = "STANDARD" or GL.GLTypeCode = "SYSTEM" ) then do:
+                  if ((CInvoiceVat.CInvoiceVatVatDebitTC - CInvoiceVat.CInvoiceVatVatCreditTC) -
+                  (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) <= 0.01 
+                  and (CInvoiceVat.CInvoiceVatVatDebitTC - CInvoiceVat.CInvoiceVatVatCreditTC) -
+                  (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) >= (- 0.01 )) or 
+                  (CInvoiceVat.CInvoiceVatVatDebitTC - CInvoiceVat.CInvoiceVatVatCreditTC) -
+                  (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) = 0
 
-                  if (CInvoiceVat.CInvoiceVatVatBaseDebitTC - CInvoiceVat.CInvoiceVatVatBaseCreditTC) -
+                  or (CInvoiceVat.CInvoiceVatVatDebitTC - CInvoiceVat.CInvoiceVatVatCreditTC) =
+                  (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) 
+                  or (CInvoiceVat.CInvoiceVatVatDebitTC - CInvoiceVat.CInvoiceVatVatCreditTC) =
+                  - (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC)
+
+                  or (CInvoiceVat.CInvoiceVatVatDebitTC - CInvoiceVat.CInvoiceVatVatCreditTC) =
+                  (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) + 0.01
+                  or (CInvoiceVat.CInvoiceVatVatDebitTC - CInvoiceVat.CInvoiceVatVatCreditTC) =
+                  - (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) - 0.01
+
+                  or (CInvoiceVat.CInvoiceVatVatDebitTC - CInvoiceVat.CInvoiceVatVatCreditTC) + 0.01 =
+                  (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC)
+                  or (CInvoiceVat.CInvoiceVatVatDebitTC - CInvoiceVat.CInvoiceVatVatCreditTC) - 0.01 =
+                  - (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) 
+
+                  or ((CInvoiceVat.CInvoiceVatVatBaseDebitTC - CInvoiceVat.CInvoiceVatVatBaseCreditTC) -
                   (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) <= 0.01 
                   and (CInvoiceVat.CInvoiceVatVatBaseDebitTC - CInvoiceVat.CInvoiceVatVatBaseCreditTC) -
-                  (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) >= (- 0.01 )
+                  (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) >= (- 0.01 )) or 
+                  (CInvoiceVat.CInvoiceVatVatBaseDebitTC - CInvoiceVat.CInvoiceVatVatBaseCreditTC) -
+                  (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) = 0
+
+                  or (CInvoiceVat.CInvoiceVatVatBaseDebitTC - CInvoiceVat.CInvoiceVatVatBaseCreditTC) =
+                  (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) 
+                  or (CInvoiceVat.CInvoiceVatVatBaseDebitTC - CInvoiceVat.CInvoiceVatVatBaseCreditTC) =
+                  - (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC)
+
+                  or (CInvoiceVat.CInvoiceVatVatBaseDebitTC - CInvoiceVat.CInvoiceVatVatBaseCreditTC) =
+                  (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) + 0.01
+                  or (CInvoiceVat.CInvoiceVatVatBaseDebitTC - CInvoiceVat.CInvoiceVatVatBaseCreditTC) =
+                  - (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) - 0.01
+
+                  or (CInvoiceVat.CInvoiceVatVatBaseDebitTC - CInvoiceVat.CInvoiceVatVatBaseCreditTC) + 0.01 =
+                  (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC)
+                  or (CInvoiceVat.CInvoiceVatVatBaseDebitTC - CInvoiceVat.CInvoiceVatVatBaseCreditTC) - 0.01 =
+                  - (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) 
+
+
+
                   then do:
-                     
+              
                      find first vat 
                      where CInvoiceVat.Vat_ID = Vat.Vat_ID
                      no-lock no-error.
                      if available vat then arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
 
                   end.
+                 
+
                end.
             end.
 
