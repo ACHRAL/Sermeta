@@ -261,7 +261,9 @@ repeat:
          b_tt_output.field_18   v_file_sp
          b_tt_output.field_19   v_file_sp
          b_tt_output.field_20   v_file_sp
-         b_tt_output.field_21    
+         b_tt_output.field_21   v_file_sp
+         b_tt_output.field_22   v_file_sp
+         b_tt_output.field_23   
          skip.
          
       end.
@@ -291,7 +293,9 @@ repeat:
          b_tt_output.field_18   v_file_sp
          b_tt_output.field_19   v_file_sp
          b_tt_output.field_20   v_file_sp
-         b_tt_output.field_21    
+         b_tt_output.field_21   v_file_sp
+         b_tt_output.field_22   v_file_sp
+         b_tt_output.field_23    
          skip.
          
       end.
@@ -321,7 +325,9 @@ repeat:
          b_tt_output.field_18   v_file_sp
          b_tt_output.field_19   v_file_sp
          b_tt_output.field_20   v_file_sp
-         b_tt_output.field_21    
+         b_tt_output.field_21   v_file_sp
+         b_tt_output.field_22   v_file_sp
+         b_tt_output.field_23     
          skip.
          
       end.
