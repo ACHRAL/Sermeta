@@ -630,6 +630,7 @@ procedure search_data :
                end.
 
                else if (GL.GLTypeCode = "STANDARD" or GL.GLTypeCode = "SYSTEM" ) then do:
+                  
                   if ((CInvoiceVat.CInvoiceVatVatDebitTC - CInvoiceVat.CInvoiceVatVatCreditTC) -
                   (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) <= 0.01 
                   and (CInvoiceVat.CInvoiceVatVatDebitTC - CInvoiceVat.CInvoiceVatVatCreditTC) -
@@ -675,7 +676,7 @@ procedure search_data :
                   - (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) 
 
                   then do:
-              
+                     
                      find first vat 
                      where CInvoiceVat.Vat_ID = Vat.Vat_ID
                      no-lock no-error.
@@ -709,8 +710,7 @@ procedure search_data :
 
                   /*arr_line[4] = "V".
                   arr_line[17] = "".*/
-                  if decimal(arr_line[19]) <> 0 
-                  then do :   
+                    
                      for each vat 
                      where PostingVat.Vat_ID = Vat.Vat_ID
                      no-lock :
@@ -719,7 +719,6 @@ procedure search_data :
                         run add_row(input arr_line). */
                         
                      end. /* for each vat */
-                  end. /*if decimal(arr_line[19]) <> 0 */
                end. /*if (GL.GLTypeCode = "VAT") */
             end. /*for each postingvat */
                
@@ -806,6 +805,16 @@ procedure search_data :
                run add_row(input arr_line).
 
             end.
+
+            if (GL.GLTypeCode = "VAT" ) then do:
+               if decimal(arr_line[19]) <> 0 
+                  then do : 
+                     Cinvoice.CustomCombo0 = "exp" .
+                     run add_row(input arr_line).
+                  END.
+               /*Cinvoice.CustomCombo0 = "exp" .
+                        run add_row(input arr_line). */
+            END.
 
             
 
