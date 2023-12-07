@@ -394,12 +394,10 @@ procedure search_data :
 
 
    for each CInvoice  exclusive-lock        
-
-      
-   where    CInvoice.CInvoiceVoucher       >=  voucher_f 
-   and    CInvoice.CInvoiceVoucher       <=    voucher_t
-   and    CInvoice.CInvoicePostingYear       >=  date_f
-   and    CInvoice.CInvoicePostingYear       <=  date_t
+   where    CInvoice.CInvoiceVoucher     >=  voucher_f 
+   and    CInvoice.CInvoiceVoucher       <=  voucher_t
+   and    CInvoice.CInvoicePostingYear   >=  date_f
+   and    CInvoice.CInvoicePostingYear   <=  date_t
 
    and CInvoice.CInvoiceDueDate     >=  v_datev_from
    and    CInvoice.CInvoiceDueDate     <=  v_datev_to
@@ -485,24 +483,6 @@ procedure search_data :
       where CInvoice.CInvoiceCurrency_ID = Currency.Currency_ID   
       no-lock no-error. 
       if available Currency then v_currency_code = Currency.CurrencyCode.  
-      define variable a as integer initial 0  no-undo.
-      define variable b as character  initial "" no-undo.
-
-      for each CInvoiceVat                                                
-      where CInvoiceVat.Cinvoice_iD = Cinvoice.Cinvoice_ID                            
-      no-lock:
-         
-         a = a + 1 .
-         if a = 2 then do : 
-            b = "" .
-            leave. 
-         end.
-         find first vat 
-         where CInvoiceVat.Vat_ID = Vat.Vat_ID
-         no-lock no-error.
-         if available vat then  b = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
-      end.
-
       num_line = num_line + 1.
 
       for each CInvoicePosting no-lock
@@ -592,9 +572,6 @@ procedure search_data :
 
             
             arr_line[16] = CInvoice.CInvoiceReference.
-
-            arr_line[17] = b.
-
             
             
             arr_line[18] = v_currency_code.
@@ -612,24 +589,31 @@ procedure search_data :
             arr_line[22] = string(num_line).
 
             
-            
-            for each CInvoiceVat                                                
-            where CInvoicevat.CInvoice_ID = CInvoice.CInvoice_ID                            
-            no-lock:
-               if (GL.GLTypeCode = "VAT"  and GL.GL_ID = CInvoiceVat.NormalTaxGL_ID ) then do:
+            if (GL.GLTypeCode = "VAT"  and GL.GL_ID = PostingLine.GL_ID ) then do:
 
-                  find first vat
-                  where CInvoiceVat.Vat_ID = Vat.Vat_ID
-                  no-lock no-error.
-                  if available vat then arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
-     
-                 
+               for each postingvat 
+               where PostingVat.PostingLine_ID = PostingLine.PostingLine_ID
+               no-lock : 
+               
+                  for each vat 
+                  where PostingVat.Vat_ID = Vat.Vat_ID
+                  no-lock :
+                     arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
+                  end. /* for each vat */
+               
                   arr_line[4] = "G".
                   arr_line[21] = "".
                      
+                  
                end.
+            end.
 
-               else if (GL.GLTypeCode = "STANDARD" or GL.GLTypeCode = "SYSTEM" ) then do:
+            if (GL.GLTypeCode = "STANDARD" or GL.GLTypeCode = "SYSTEM" and GL.GL_ID =  PostingLine.GL_ID  ) then do:
+               
+               for each CInvoiceVat                                                
+               where CInvoiceVat.Cinvoice_iD = CInvoice.Cinvoice_ID                            
+               no-lock:
+                  
                   if ((CInvoiceVat.CInvoiceVatVatDebitTC - CInvoiceVat.CInvoiceVatVatCreditTC) -
                   (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) <= 0.01 
                   and (CInvoiceVat.CInvoiceVatVatDebitTC - CInvoiceVat.CInvoiceVatVatCreditTC) -
@@ -672,20 +656,17 @@ procedure search_data :
                   or (CInvoiceVat.CInvoiceVatVatBaseDebitTC - CInvoiceVat.CInvoiceVatVatBaseCreditTC) + 0.01 =
                   (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC)
                   or (CInvoiceVat.CInvoiceVatVatBaseDebitTC - CInvoiceVat.CInvoiceVatVatBaseCreditTC) - 0.01 =
-                  - (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) 
+                  - (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC)
 
                   then do:
-              
                      find first vat 
                      where CInvoiceVat.Vat_ID = Vat.Vat_ID
                      no-lock no-error.
-                     if available vat then arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
-
+                     if available vat  then arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
                   end.
-                 
-
                end.
             end.
+
 
             if arr_line[17] = "" then do:
 
