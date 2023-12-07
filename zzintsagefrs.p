@@ -367,6 +367,13 @@ procedure compute :
                   and bff_tt_output.field_17 = "-" :
                      bff_tt_output.field_17 = field_17.
                   end. 
+
+                  for each bff_tt_output where tt_output.field_22 = field_22
+                  and bff_tt_output.field_17 = "" and bff_tt_output.field_4 = "A" and bff_tt_output.field_3 = bf1_tt_output.field_3:
+                     bff_tt_output.field_17 = field_17.
+                  end. 
+
+
                   v-res = 1.
                   v-total-va = v-total-va + decimal(bf1_tt_output.field_15) .
                   leave.
