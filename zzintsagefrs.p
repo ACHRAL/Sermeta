@@ -22,6 +22,7 @@ define temp-table tt_output
    field field_20 as character
    field field_21 as character
    field field_22 as integer
+   field field_23 as double
 .
 
 
@@ -202,12 +203,38 @@ repeat:
    
    v_file =  v_op_path +  v_file  .
    define buffer b_tt_output for tt_output.
+   define buffer b2_tt_output for tt_output.
    define stream file_csv.
+   define var v-total-vat as double no-undo.
+   define var v-res-compute as int no-undo.
    output stream file_csv to value (v_file).
    for each tt_output 
    break by field_22 :
 
       IF FIRST-OF(tt_output.field_22) then do:
+
+      for each b_tt_output where b_tt_output.field_22 = tt_output.field_22
+      and b_tt_output.field_4 = "V" :
+         
+         v-total-vat = 0 .
+         for each bf_tt_output where bf_tt_output.field_22 = b_tt_output.field_22
+         and bf_tt_output.field_17 = b_tt_output.field_17 :
+            v-total-vat = v-total-vat + decimal(bf_tt_output.field_15).
+         end.
+
+         if (v-total-vat = b_tt_output.field_23) then
+            next.
+         else do:
+            
+            do while v-res-compute <> 1 :
+               run compute (input b_tt_output.field_22,input b_tt_output.field_23,input b_tt_output.field_15,input b_tt_output.field_17,input v-total-vat, output v-res-compute).
+            end.
+         end.
+
+      end.
+
+      end.
+
       for each b_tt_output 
       where b_tt_output.field_22 = tt_output.field_22
       and b_tt_output.field_4 <> "V" 
@@ -312,6 +339,62 @@ repeat:
 
 end.
 
+procedure compute :
+
+   define input parameter field_22 as int no-undo.
+   define input parameter field_23 as int no-undo.
+   define input parameter field_15 as int no-undo.
+   define input parameter field_17 as int no-undo.
+   define input parameter v-total-vat as double no-undo.
+   define output parameter v-res as double no-undo.
+   define buffer bf1_tt_output for tt_output.
+   define buffer bff_tt_output for tt_output.
+
+   for each bf1_tt_output where bf1_tt_output.field_22 = field_22
+            and bf1_tt_output.field_17 = "" :
+               
+               if (v-total-vat + decimal(bf1_tt_output.field_15)) = field_23 then do:
+
+                  bf_tt_output.field_17 = field_17.
+
+                  for each bff_tt_output tt_output.field_22 = field_22
+                  and bff_tt_output.field_17 = "-" :
+                     bff_tt_output.field_17 = field_17.
+                  end. 
+                  v-res = 1.
+                  v-total-vat = v-total-vat + decimal(bf1_tt_output.field_15) .
+                  leave.
+
+               end.
+
+
+               if (v-total-vat + decimal(bf1_tt_output.field_15)) < field_23 then do:
+
+                  bf1_tt_output.field_17 = "-" .
+                  v-total-vat = v-total-vat + decimal(bf1_tt_output.field_15) .
+                  v-res = 0.
+                  run compute (input field_22,input field_23,input field_15,input field_17,input v-total-vat,output v-res).
+                  
+               end.
+
+               if (v-total-vat + decimal(bf1_tt_output.field_15)) > field_23 then do:
+
+                  v-res = - 1.
+                  bf1_tt_output.field_17 = "" .
+
+                  for each bff_tt_output bf1_tt_output.field_22 = field_22
+                  and bff_tt_output.field_17 = "-" :
+                     bff_tt_output.field_17 = "".
+                  end. 
+
+                  v-total-vat = v-total-vat + decimal(bf1_tt_output.field_15) .
+                  leave.
+                  
+               end.
+
+            end.
+
+end.
 
 procedure add_row :
 
@@ -610,6 +693,7 @@ procedure search_data :
 
             arr_line[21] = "".
             arr_line[22] = string(num_line).
+            arr_line[23] = 0 .
 
             
             
@@ -624,8 +708,9 @@ procedure search_data :
                   if available vat then arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
      
                  
-                  arr_line[4] = "G".
+                  arr_line[4] = "V".
                   arr_line[21] = "".
+                  arr_line[23] = CInvoiceVat.CInvoiceVatVatBaseDebitTC - CInvoiceVat.CInvoiceVatVatBaseCreditTC.
                      
                end.
 
