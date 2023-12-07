@@ -22,7 +22,7 @@ define temp-table tt_output
    field field_20 as character
    field field_21 as character
    field field_22 as integer
-   field field_23 as double
+   field field_23 as decimal
 .
 
 
@@ -205,7 +205,7 @@ repeat:
    define buffer b_tt_output for tt_output.
    define buffer b2_tt_output for tt_output.
    define stream file_csv.
-   define var v-total-vat as double no-undo.
+   define var v-total-vat as decimal no-undo.
    define var v-res-compute as int no-undo.
    output stream file_csv to value (v_file).
    for each tt_output 
@@ -217,9 +217,9 @@ repeat:
       and b_tt_output.field_4 = "V" :
          
          v-total-vat = 0 .
-         for each bf_tt_output where bf_tt_output.field_22 = b_tt_output.field_22
-         and bf_tt_output.field_17 = b_tt_output.field_17 :
-            v-total-vat = v-total-vat + decimal(bf_tt_output.field_15).
+         for each b2_tt_output where b2_tt_output.field_22 = b_tt_output.field_22
+         and b2_tt_output.field_17 = b_tt_output.field_17 :
+            v-total-vat = v-total-vat + decimal(b2_tt_output.field_15).
          end.
 
          if (v-total-vat = b_tt_output.field_23) then
@@ -351,8 +351,8 @@ procedure compute :
    define input parameter field_23 as int no-undo.
    define input parameter field_15 as int no-undo.
    define input parameter field_17 as int no-undo.
-   define input parameter v-total-vat as double no-undo.
-   define output parameter v-res as double no-undo.
+   define input parameter v-total-vat as decimal no-undo.
+   define output parameter v-res as decimal no-undo.
    define buffer bf1_tt_output for tt_output.
    define buffer bff_tt_output for tt_output.
 
