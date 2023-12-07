@@ -218,7 +218,7 @@ repeat:
          
          v-total-vat = 0 .
          for each b2_tt_output where b2_tt_output.field_22 = b_tt_output.field_22
-         and b2_tt_output.field_17 = b_tt_output.field_17 :
+         and b2_tt_output.field_17 = b_tt_output.field_17 and  b2_tt_output.field_4 = "G":
             v-total-vat = v-total-vat + decimal(b2_tt_output.field_15).
          end.
 
@@ -233,7 +233,7 @@ repeat:
 
       end.
 
-      end.
+      
 
       for each b_tt_output 
       where b_tt_output.field_22 = tt_output.field_22
@@ -348,52 +348,52 @@ end.
 procedure compute :
 
    define input parameter field_22 as int no-undo.
-   define input parameter field_23 as int no-undo.
-   define input parameter field_15 as int no-undo.
-   define input parameter field_17 as int no-undo.
-   define input parameter v-total-vat as decimal no-undo.
+   define input parameter field_23 as decimal no-undo.
+   define input parameter field_15 as char no-undo.
+   define input parameter field_17 as char no-undo.
+   define input parameter v-total-va as decimal no-undo.
    define output parameter v-res as decimal no-undo.
    define buffer bf1_tt_output for tt_output.
    define buffer bff_tt_output for tt_output.
 
-   for each bf1_tt_output where bf1_tt_output.field_22 = field_22
+   for each bf1_tt_output where bf1_tt_output.field_22 = field_22 and bf1_tt_output.field_4 = "G"
             and bf1_tt_output.field_17 = "" :
                
-               if (v-total-vat + decimal(bf1_tt_output.field_15)) = field_23 then do:
+               if (v-total-va + decimal(bf1_tt_output.field_15)) = field_23 then do:
 
-                  bf_tt_output.field_17 = field_17.
+                  bf1_tt_output.field_17 = field_17.
 
-                  for each bff_tt_output tt_output.field_22 = field_22
+                  for each bff_tt_output where tt_output.field_22 = field_22
                   and bff_tt_output.field_17 = "-" :
                      bff_tt_output.field_17 = field_17.
                   end. 
                   v-res = 1.
-                  v-total-vat = v-total-vat + decimal(bf1_tt_output.field_15) .
+                  v-total-va = v-total-va + decimal(bf1_tt_output.field_15) .
                   leave.
 
                end.
 
 
-               if (v-total-vat + decimal(bf1_tt_output.field_15)) < field_23 then do:
+               if (v-total-va + decimal(bf1_tt_output.field_15)) < field_23 then do:
 
                   bf1_tt_output.field_17 = "-" .
-                  v-total-vat = v-total-vat + decimal(bf1_tt_output.field_15) .
+                  v-total-va = v-total-va + decimal(bf1_tt_output.field_15) .
                   v-res = 0.
-                  run compute (input field_22,input field_23,input field_15,input field_17,input v-total-vat,output v-res).
+                  run compute (input field_22,input field_23,input field_15,input field_17,input v-total-va,output v-res).
                   
                end.
 
-               if (v-total-vat + decimal(bf1_tt_output.field_15)) > field_23 then do:
+               if (v-total-va + decimal(bf1_tt_output.field_15)) > field_23 then do:
 
                   v-res = - 1.
                   bf1_tt_output.field_17 = "" .
 
-                  for each bff_tt_output bf1_tt_output.field_22 = field_22
+                  for each bff_tt_output where bf1_tt_output.field_22 = field_22
                   and bff_tt_output.field_17 = "-" :
                      bff_tt_output.field_17 = "".
                   end. 
 
-                  v-total-vat = v-total-vat + decimal(bf1_tt_output.field_15) .
+                  
                   leave.
                   
                end.
