@@ -687,7 +687,7 @@ procedure search_data :
                end.
             end.
 
-            if arr_line[17] = "" then do:
+            if arr_line[17] = "" and GL.GLTypeCode <> "VAT" then do:
 
                for first APMatchingLN where APMatchingLN.PvoPostingLine_ID = PostingLine.PostingLine_ID:
                   
@@ -701,6 +701,27 @@ procedure search_data :
                end.
 
             end.
+
+            for each postingvat 
+            where PostingVat.PostingLine_ID = PostingLine.PostingLine_ID
+            no-lock : 
+               if (GL.GLTypeCode <> "VAT") then do:
+
+                  /*arr_line[4] = "V".
+                  arr_line[17] = "".*/
+                  if decimal(arr_line[19]) <> 0 
+                  then do :   
+                     for each vat 
+                     where PostingVat.Vat_ID = Vat.Vat_ID
+                     no-lock :
+                        arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
+                        /*Cinvoice.CustomCombo0 = "exp" .
+                        run add_row(input arr_line). */
+                        
+                     end. /* for each vat */
+                  end. /*if decimal(arr_line[19]) <> 0 */
+               end. /*if (GL.GLTypeCode = "VAT") */
+            end. /*for each postingvat */
                
 
 
@@ -786,26 +807,7 @@ procedure search_data :
 
             end.
 
-            for each postingvat 
-            where PostingVat.PostingLine_ID = PostingLine.PostingLine_ID
-            no-lock : 
-               if (GL.GLTypeCode = "VAT") then do:
-
-                  arr_line[4] = "V".
-                  arr_line[17] = "".
-                  if decimal(arr_line[19]) <> 0 
-                  then do :   
-                     for each vat 
-                     where PostingVat.Vat_ID = Vat.Vat_ID
-                     no-lock :
-                        arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
-                        Cinvoice.CustomCombo0 = "exp" .
-                        run add_row(input arr_line). 
-                        
-                     end. /* for each vat */
-                  end. /*if decimal(arr_line[19]) <> 0 */
-               end. /*if (GL.GLTypeCode = "VAT") */
-            end. /*for each postingvat */
+            
 
          if GL.GLTypeCode = "CREDITORCONTROL" then do:
             arr_line[5]   =  v_subaccount.
