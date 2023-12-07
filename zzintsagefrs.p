@@ -425,6 +425,7 @@ procedure add_row :
    tt_output.field_20 = i_arr_line[20].
    tt_output.field_21 = i_arr_line[21].
    tt_output.field_22  = decimal(i_arr_line[22]).
+   tt_output.field_23  = decimal(i_arr_line[23]).
  
 
 end.
@@ -693,7 +694,7 @@ procedure search_data :
 
             arr_line[21] = "".
             arr_line[22] = string(num_line).
-            arr_line[23] = 0 .
+            arr_line[23] = "0" .
 
             
             
@@ -710,7 +711,7 @@ procedure search_data :
                  
                   arr_line[4] = "V".
                   arr_line[21] = "".
-                  arr_line[23] = CInvoiceVat.CInvoiceVatVatBaseDebitTC - CInvoiceVat.CInvoiceVatVatBaseCreditTC.
+                  arr_line[23] = string(CInvoiceVat.CInvoiceVatVatBaseDebitTC - CInvoiceVat.CInvoiceVatVatBaseCreditTC).
                      
                end.
 
