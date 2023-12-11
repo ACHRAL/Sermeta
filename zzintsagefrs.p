@@ -236,9 +236,9 @@ define buffer b_tt_output for tt_output.
             next.
          else do:
             
-            do while v-res-compute <> 1 :
+            /*do while v-res-compute <> 1 :
                run compute (input b_tt_output.field_22,input b_tt_output.field_23,input b_tt_output.field_15,input b_tt_output.field_17,input v-total-vat, output v-res-compute).
-            end.
+            end.*/
          end.
 
       end.
