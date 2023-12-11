@@ -196,13 +196,23 @@ repeat:
       undo mainloop, retry mainloop.
    end.
 
+   v_file =  v_op_path +  v_file  .
+
    if v_rexp = yes then run search_data(input "exp").
    else 
       run search_data(input "").
 
    
-   v_file =  v_op_path +  v_file  .
-   define buffer b_tt_output for tt_output.
+   
+   
+
+
+
+end.
+
+procedure write_csv:
+
+define buffer b_tt_output for tt_output.
    define buffer b2_tt_output for tt_output.
    define stream file_csv.
    define var v-total-vat as decimal no-undo.
@@ -334,8 +344,7 @@ repeat:
 
 
    output stream file_csv close.
-
-
+   empty temp-table tt_output.
 
 end.
 
@@ -447,6 +456,7 @@ procedure search_data :
    define input parameter i_exp as character.
    define buffer zz_cinvoice for CInvoice.
    define buffer xx_cinvoice for Cinvoice.
+   define buffer d_cinvoice for tt_output.
 
 
    define variable voucher_f as int.
@@ -929,6 +939,7 @@ procedure search_data :
       end.    
                                                       
    end. 
+   run write_csv.
    release Cinvoice.
 
    
