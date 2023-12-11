@@ -234,7 +234,7 @@ define buffer b_tt_output for tt_output.
 
          if (v-total-vat = b_tt_output.field_23) then
             next.
-         else do:
+         else if (v-total-vat < b_tt_output.field_23) do:
             
             display v-total-vat.
             display b_tt_output.field_23.
