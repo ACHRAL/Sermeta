@@ -715,6 +715,8 @@ procedure search_data :
             arr_line[22] = string(num_line).
             arr_line[23] = "0" .
 
+            disp GL.GLTypeCode + " : " + GL.GLCode .
+
             
             
             for each CInvoiceVat                                                
