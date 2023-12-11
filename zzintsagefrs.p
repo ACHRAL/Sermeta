@@ -238,9 +238,9 @@ define buffer b_tt_output for tt_output.
             next.
          else if (v-total-vat < b_tt_output.field_23) then do:
             
-            /*do while v-res-compute <> 1 :
+            do while v-res-compute <> 1 :
                run compute (input b_tt_output.field_22,input decimal(b_tt_output.field_23),input b_tt_output.field_15,input b_tt_output.field_17,input v-total-vat, output v-res-compute).
-            end.*/
+            end.
          end.
 
       end.
@@ -597,20 +597,7 @@ procedure search_data :
       define variable a as integer initial 0  no-undo.
       define variable b as character  initial "" no-undo.
 
-      for each CInvoiceVat                                                
-      where CInvoiceVat.Cinvoice_iD = Cinvoice.Cinvoice_ID                            
-      no-lock:
-         
-         a = a + 1 .
-         if a = 2 then do : 
-            b = "" .
-            leave. 
-         end.
-         find first vat 
-         where CInvoiceVat.Vat_ID = Vat.Vat_ID
-         no-lock no-error.
-         if available vat then  b = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
-      end.
+      
 
       num_line = num_line + 1.
 
@@ -702,7 +689,7 @@ procedure search_data :
             
             arr_line[16] = CInvoice.CInvoiceReference.
 
-            arr_line[17] = b.
+            arr_line[17] = "".
 
             
             
@@ -800,7 +787,7 @@ procedure search_data :
                end.
             end.
 
-            /*if arr_line[17] = "" and GL.GLTypeCode <> "VAT" then do:
+            if arr_line[17] = "" and GL.GLTypeCode <> "VAT" then do:
 
                for first APMatchingLN where APMatchingLN.PvoPostingLine_ID = PostingLine.PostingLine_ID:
                   
@@ -833,7 +820,7 @@ procedure search_data :
                      end. /* for each vat */
                end. /*if (GL.GLTypeCode = "VAT") */
             end. /*for each postingvat */
-               */
+               
 
 
             if (GL.GLTypeCode = "SYSTEM" ) then do:
