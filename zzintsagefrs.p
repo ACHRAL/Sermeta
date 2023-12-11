@@ -224,7 +224,7 @@ define buffer b_tt_output for tt_output.
       IF FIRST-OF(tt_output.field_22) then do:
 
       for each b_tt_output where b_tt_output.field_22 = tt_output.field_22
-      and b_tt_output.field_4 = "V" :
+      and b_tt_output.field_4 = "V" and b_tt_output.field_17 <> "":
          
          v-total-vat = 0 .
          for each b2_tt_output where b2_tt_output.field_22 = b_tt_output.field_22
@@ -379,10 +379,10 @@ procedure compute :
                      bff_tt_output.field_17 = field_17.
                   end. 
 
-                  for each bff_tt_output where tt_output.field_22 = field_22
+                  /*for each bff_tt_output where tt_output.field_22 = field_22
                   and bff_tt_output.field_17 = "" and bff_tt_output.field_4 = "A" and bff_tt_output.field_3 = bf1_tt_output.field_3:
-                     bff_tt_output.field_17 = "hello achref".
-                  end. 
+                     bff_tt_output.field_17 = field_17.
+                  end. */
 
 
                   v-res = 1.
