@@ -218,6 +218,9 @@ procedure write_csv:
 define buffer b_tt_output for tt_output.
    define buffer b2_tt_output for tt_output.
    define var v-total-vat as decimal no-undo.
+   define var v-res as int no-undo.
+
+   v-res = 1.
    output stream file_csv to value (v_file) append.
    for each tt_output 
    break by field_22 :
@@ -236,9 +239,10 @@ define buffer b_tt_output for tt_output.
          if (v-total-vat = b_tt_output.field_23) then
             next.
          else if (v-total-vat < b_tt_output.field_23) then do:
-            
-               run compute (input b_tt_output.field_22,input decimal(b_tt_output.field_23),input b_tt_output.field_15,input b_tt_output.field_17,input v-total-vat,input 1).
 
+            do while (v-res <> 0) :
+               run compute (input b_tt_output.field_22,input decimal(b_tt_output.field_23),input b_tt_output.field_15,input b_tt_output.field_17,input v-total-vat,input-output v-res).
+            end.
          end.
 
 
@@ -386,7 +390,7 @@ procedure compute :
    define input parameter field_15 as char no-undo.
    define input parameter field_17 as char no-undo.
    define input parameter v-total-va as decimal no-undo.
-   define input parameter v-res as int no-undo.
+   define input-output parameter v-res as int no-undo.
    define variable v-counter as int no-undo.
    define buffer bf1_tt_output for tt_output.
    define buffer bff_tt_output for tt_output.
@@ -422,7 +426,7 @@ procedure compute :
 
                   bf1_tt_output.field_17 = "-" .
                   v-total-va = v-total-va + decimal(bf1_tt_output.field_15) .
-                  run compute (input field_22,input field_23,input field_15,input field_17,input v-total-va,input v-res).
+                  run compute (input field_22,input field_23,input field_15,input field_17,input v-total-va,input-output v-res).
                   
                end.
 
@@ -444,7 +448,8 @@ procedure compute :
                      bff_tt_output.field_17 = "".
                end. 
 
-               run compute (input field_22,input field_23,input field_15,input field_17,input v-total-va,input v-res + 1).
+               v-res = v-res + 1.
+
             end.
 
 end.
