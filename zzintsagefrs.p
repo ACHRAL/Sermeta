@@ -944,9 +944,9 @@ procedure search_data :
 
 
       end.    
-                                                      
+   run write_csv.                                                  
    end. 
-   run write_csv.
+   
    release Cinvoice.
 
    
