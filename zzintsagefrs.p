@@ -229,7 +229,7 @@ define buffer b_tt_output for tt_output.
          v-total-vat = 0 .
          for each b2_tt_output where b2_tt_output.field_22 = b_tt_output.field_22
          and b2_tt_output.field_17 = b_tt_output.field_17 and  b2_tt_output.field_4 = "G":
-            v-total-vat = v-total-vat + decimal(b2_tt_output.field_19).
+            v-total-vat = v-total-vat + decimal(b2_tt_output.field_15).
          end.
 
          if (v-total-vat = b_tt_output.field_23) then
@@ -239,7 +239,7 @@ define buffer b_tt_output for tt_output.
             display v-total-vat.
             display b_tt_output.field_23.
             do while v-res-compute <> 1 :
-               run compute (input b_tt_output.field_22,input decimal(b_tt_output.field_23),input b_tt_output.field_19,input b_tt_output.field_17,input v-total-vat, output v-res-compute).
+               run compute (input b_tt_output.field_22,input decimal(b_tt_output.field_23),input b_tt_output.field_15,input b_tt_output.field_17,input v-total-vat, output v-res-compute).
             end.
          end.
 
