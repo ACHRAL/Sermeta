@@ -203,6 +203,8 @@ repeat:
    else 
       run search_data(input "").
 
+   run write_csv.
+
    
    
    
@@ -944,10 +946,11 @@ procedure search_data :
 
 
       end.    
-   run write_csv.                                                  
+   release Cinvoice.
+                                                  
    end. 
    
-   release Cinvoice.
+   
 
    
 end procedure.
