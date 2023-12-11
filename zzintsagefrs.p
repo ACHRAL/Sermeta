@@ -226,7 +226,7 @@ define buffer b_tt_output for tt_output.
       IF FIRST-OF(tt_output.field_22) then do:
 
       for each b_tt_output where b_tt_output.field_22 = tt_output.field_22
-      and b_tt_output.field_4 = "V" and (b_tt_output.field_17 <> "" or b_tt_output.field_23 = 0):
+      and b_tt_output.field_4 = "V" and b_tt_output.field_17 <> "" and b_tt_output.field_23 <> 0:
          
          v-total-vat = 0 .
          for each b2_tt_output where b2_tt_output.field_22 = b_tt_output.field_22
@@ -240,6 +240,9 @@ define buffer b_tt_output for tt_output.
             
             do while v-res-compute <> 1 :
                run compute (input b_tt_output.field_22,input decimal(b_tt_output.field_23),input b_tt_output.field_15,input b_tt_output.field_17,input v-total-vat, output v-res-compute).
+            end.
+
+            if v-res-compute = 1 then do:
             end.
          end.
 
@@ -714,7 +717,7 @@ procedure search_data :
             for each CInvoiceVat                                                
             where CInvoicevat.CInvoice_ID = CInvoice.CInvoice_ID                            
             no-lock:
-               if (GL.GLTypeCode = "VAT"  and GL.GL_ID = CInvoiceVat.NormalTaxGL_ID ) then do:
+               if (GL.GLTypeCode = "VAT") then do:
 
                   find first vat
                   where CInvoiceVat.Vat_ID = Vat.Vat_ID
@@ -728,7 +731,7 @@ procedure search_data :
                      
                end.
 
-               else if (GL.GLTypeCode = "STANDARD" or GL.GLTypeCode = "SYSTEM" or (GL.GLTypeCode = "VAT" and  arr_line[17] = "")) then do:
+               else if (GL.GLTypeCode = "STANDARD" or GL.GLTypeCode = "SYSTEM") then do:
                   
                   if ((CInvoiceVat.CInvoiceVatVatDebitTC - CInvoiceVat.CInvoiceVatVatCreditTC) -
                   (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) <= 0.01 
