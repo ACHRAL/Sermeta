@@ -232,7 +232,7 @@ define buffer b_tt_output for tt_output.
             v-total-vat = v-total-vat + decimal(b2_tt_output.field_19).
          end.
 
-         if (v-total-vat = decimal(b_tt_output.field_23)) then
+         if (v-total-vat = b_tt_output.field_23) then
             next.
          else do:
             
