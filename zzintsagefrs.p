@@ -410,7 +410,7 @@ procedure compute :
                   and bff_tt_output.field_17 = "" and bff_tt_output.field_4 = "A" and bff_tt_output.field_3 = bf1_tt_output.field_3:
                      bff_tt_output.field_17 = field_17.
                   end. */
-
+                  v-res = 0.
 
                   v-total-va = v-total-va + decimal(bf1_tt_output.field_15) .
                   leave.
@@ -443,7 +443,8 @@ procedure compute :
                v-counter = v-counter + 1.
 
             end.
-            run compute (input field_22,input field_23,input field_15,input field_17,input v-total-va,input v-res + 1).
+            if (v-res <> 0) then
+               run compute (input field_22,input field_23,input field_15,input field_17,input v-total-va,input v-res + 1).
 
 end.
 
