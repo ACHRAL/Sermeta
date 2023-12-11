@@ -218,7 +218,6 @@ procedure write_csv:
 define buffer b_tt_output for tt_output.
    define buffer b2_tt_output for tt_output.
    define var v-total-vat as decimal no-undo.
-   define var v-res-compute as int no-undo.
    output stream file_csv to value (v_file) append.
    for each tt_output 
    break by field_22 :
@@ -238,9 +237,7 @@ define buffer b_tt_output for tt_output.
             next.
          else if (v-total-vat < b_tt_output.field_23) then do:
             
-            do while v-res-compute <> 1 :
-               run compute (input b_tt_output.field_22,input decimal(b_tt_output.field_23),input b_tt_output.field_15,input b_tt_output.field_17,input v-total-vat, output v-res-compute).
-            end.
+               run compute (input b_tt_output.field_22,input decimal(b_tt_output.field_23),input b_tt_output.field_15,input b_tt_output.field_17,input v-total-vat,input 1).
 
          end.
 
@@ -389,13 +386,17 @@ procedure compute :
    define input parameter field_15 as char no-undo.
    define input parameter field_17 as char no-undo.
    define input parameter v-total-va as decimal no-undo.
-   define output parameter v-res as decimal no-undo.
+   define input parameter v-res as int no-undo.
+   define variable v-counter as int no-undo.
    define buffer bf1_tt_output for tt_output.
    define buffer bff_tt_output for tt_output.
 
    for each bf1_tt_output where bf1_tt_output.field_22 = field_22 and bf1_tt_output.field_4 = "G"
             and bf1_tt_output.field_17 = "" :
                
+               if v-counter = v-res - 1 then
+                  next.
+
                if (v-total-va + decimal(bf1_tt_output.field_15)) = field_23 then do:
 
                   bf1_tt_output.field_17 = field_17.
@@ -411,7 +412,6 @@ procedure compute :
                   end. */
 
 
-                  v-res = 1.
                   v-total-va = v-total-va + decimal(bf1_tt_output.field_15) .
                   leave.
 
@@ -422,14 +422,12 @@ procedure compute :
 
                   bf1_tt_output.field_17 = "-" .
                   v-total-va = v-total-va + decimal(bf1_tt_output.field_15) .
-                  v-res = 0.
                   run compute (input field_22,input field_23,input field_15,input field_17,input v-total-va,output v-res).
                   
                end.
 
+               
                if (v-total-va + decimal(bf1_tt_output.field_19)) > field_23 then do:
-
-                  v-res = 0.
 
                   /*for each bff_tt_output where bf1_tt_output.field_22 = field_22
                   and bff_tt_output.field_17 = "-" :
@@ -442,7 +440,10 @@ procedure compute :
                   
                end.
 
+               v-counter = v-counter + 1.
+
             end.
+            run compute (input field_22,input field_23,input field_15,input field_17,input v-total-va,output v-res + 1).
 
 end.
 
