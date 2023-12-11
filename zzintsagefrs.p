@@ -237,7 +237,7 @@ define buffer b_tt_output for tt_output.
          else do:
             
             display v-total-vat.
-            display b_tt_output.field_19.
+            display b_tt_output.field_23.
             do while v-res-compute <> 1 :
                run compute (input b_tt_output.field_22,input decimal(b_tt_output.field_23),input b_tt_output.field_19,input b_tt_output.field_17,input v-total-vat, output v-res-compute).
             end.
