@@ -795,7 +795,7 @@ procedure search_data :
                end.
             end.
 
-            if arr_line[17] = "" and GL.GLTypeCode <> "VAT" then do:
+            /*if arr_line[17] = "" and GL.GLTypeCode <> "VAT" then do:
 
                for first APMatchingLN where APMatchingLN.PvoPostingLine_ID = PostingLine.PostingLine_ID:
                   
@@ -828,7 +828,7 @@ procedure search_data :
                      end. /* for each vat */
                end. /*if (GL.GLTypeCode = "VAT") */
             end. /*for each postingvat */
-               
+               */
 
 
             if (GL.GLTypeCode = "SYSTEM" ) then do:
