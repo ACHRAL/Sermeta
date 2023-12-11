@@ -26,6 +26,7 @@ define temp-table tt_output
 .
 
 
+
 define  variable v_entity_from         as character   format "x(30)"              no-undo.
 define  variable v_entity_to           as character   format "x(30)"              no-undo.
 define  variable v_piece_from          as character   format "x(30)"              no-undo.
@@ -241,9 +242,8 @@ define buffer b_tt_output for tt_output.
                run compute (input b_tt_output.field_22,input decimal(b_tt_output.field_23),input b_tt_output.field_15,input b_tt_output.field_17,input v-total-vat, output v-res-compute).
             end.
 
-            if v-res-compute = 1 then do:
-            end.
          end.
+
 
       end.
 
@@ -852,7 +852,7 @@ procedure search_data :
             if (GL.GLTypeCode = "SYSTEM" ) then do:
 
                arr_line[4] = "G".
-               //arr_line[17] = "".
+               arr_line[17] = "".
                /*find first PostingVat  
                where PostingVat.PostingLine_ID = PostingLine.PostingLine_ID
                no-lock no-error.
@@ -894,7 +894,7 @@ procedure search_data :
             if (GL.GLTypeCode = "STANDARD") then do:
 
                arr_line[4] = "G".
-               //arr_line[17] = "".
+               arr_line[17] = "".
                /*find first PostingVat  
                where PostingVat.PostingLine_ID = PostingLine.PostingLine_ID
                no-lock no-error.
