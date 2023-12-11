@@ -276,6 +276,7 @@ define buffer b_tt_output for tt_output.
          b2_tt_output.field_17 = b_tt_output.field_17.
 
       end.
+      end.
 
       
 
