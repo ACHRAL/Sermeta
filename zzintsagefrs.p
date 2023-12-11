@@ -248,6 +248,35 @@ define buffer b_tt_output for tt_output.
 
       end.
 
+      for each b_tt_output 
+      where b_tt_output.field_22 = tt_output.field_22
+      and b_tt_output.field_4 = "G" :
+
+         for each b2_tt_output 
+         where b_tt_output.field_22 = b2_tt_output.field_22
+         and b2_tt_output.field_1 = b_tt_output.field_1
+         and b2_tt_output.field_2 = b_tt_output.field_2
+         and b2_tt_output.field_3 = b_tt_output.field_3
+         and b2_tt_output.field_5 = b_tt_output.field_5
+         and b2_tt_output.field_4 = "A"
+         and b2_tt_output.field_7 = b_tt_output.field_7
+         and b2_tt_output.field_8 = b_tt_output.field_8
+         and b2_tt_output.field_9 = b_tt_output.field_9
+         and b2_tt_output.field_10 = b_tt_output.field_10
+         and b2_tt_output.field_11 = b_tt_output.field_11
+         and b2_tt_output.field_12 = b_tt_output.field_12
+         and b2_tt_output.field_13 = b_tt_output.field_13
+         and b2_tt_output.field_14 = b_tt_output.field_14
+         and b2_tt_output.field_15 = b_tt_output.field_15
+         and b2_tt_output.field_16 = b_tt_output.field_16
+         and b2_tt_output.field_18 = b_tt_output.field_18
+         and b2_tt_output.field_19 = b_tt_output.field_19
+         and b2_tt_output.field_20 = b_tt_output.field_20 :
+
+         b2_tt_output.field_17 = b_tt_output.field_17.
+
+      end.
+
       
 
       for each b_tt_output 
@@ -276,9 +305,7 @@ define buffer b_tt_output for tt_output.
          b_tt_output.field_18   v_file_sp
          b_tt_output.field_19   v_file_sp
          b_tt_output.field_20   v_file_sp
-         b_tt_output.field_21   v_file_sp 
-         b_tt_output.field_22   v_file_sp 
-         b_tt_output.field_23     
+         b_tt_output.field_21     
          skip.
          
       end.
@@ -308,9 +335,7 @@ define buffer b_tt_output for tt_output.
          b_tt_output.field_18   v_file_sp
          b_tt_output.field_19   v_file_sp
          b_tt_output.field_20   v_file_sp
-         b_tt_output.field_21   v_file_sp 
-         b_tt_output.field_22   v_file_sp 
-         b_tt_output.field_23      
+         b_tt_output.field_21      
          skip.
          
       end.
@@ -339,10 +364,8 @@ define buffer b_tt_output for tt_output.
          b_tt_output.field_17   v_file_sp
          b_tt_output.field_18   v_file_sp
          b_tt_output.field_19   v_file_sp
-         b_tt_output.field_20   v_file_sp
-         b_tt_output.field_21   v_file_sp 
-         b_tt_output.field_22   v_file_sp 
-         b_tt_output.field_23      
+         b_tt_output.field_20   v_file_sp 
+         b_tt_output.field_21      
          skip.
          
       end.
