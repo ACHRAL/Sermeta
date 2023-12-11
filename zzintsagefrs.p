@@ -394,7 +394,7 @@ procedure compute :
    for each bf1_tt_output where bf1_tt_output.field_22 = field_22 and bf1_tt_output.field_4 = "G"
             and bf1_tt_output.field_17 = "" :
                
-               if v-counter = v-res - 1 then
+               if v-counter = v-res - 1  then
                   next.
 
                if (v-total-va + decimal(bf1_tt_output.field_15)) = field_23 then do:
@@ -422,7 +422,7 @@ procedure compute :
 
                   bf1_tt_output.field_17 = "-" .
                   v-total-va = v-total-va + decimal(bf1_tt_output.field_15) .
-                  run compute (input field_22,input field_23,input field_15,input field_17,input v-total-va,output v-res).
+                  run compute (input field_22,input field_23,input field_15,input field_17,input v-total-va,input v-res).
                   
                end.
 
@@ -443,7 +443,7 @@ procedure compute :
                v-counter = v-counter + 1.
 
             end.
-            run compute (input field_22,input field_23,input field_15,input field_17,input v-total-va,output v-res + 1).
+            run compute (input field_22,input field_23,input field_15,input field_17,input v-total-va,input v-res + 1).
 
 end.
 
