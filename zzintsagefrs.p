@@ -220,7 +220,7 @@ define buffer b_tt_output for tt_output.
    define var v-total-vat as decimal no-undo.
    define var v-res as int no-undo.
 
-   v-res = 1.
+   
    output stream file_csv to value (v_file) append.
    for each tt_output 
    break by field_22 :
@@ -231,6 +231,7 @@ define buffer b_tt_output for tt_output.
       and b_tt_output.field_4 = "V" and b_tt_output.field_17 <> "" and b_tt_output.field_23 <> 0:
          
          v-total-vat = 0 .
+         v-res = 1.
          for each b2_tt_output where b2_tt_output.field_22 = b_tt_output.field_22
          and b2_tt_output.field_17 = b_tt_output.field_17 and  b2_tt_output.field_4 = "G":
             v-total-vat = v-total-vat + decimal(b2_tt_output.field_15).
