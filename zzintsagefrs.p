@@ -226,7 +226,7 @@ define buffer b_tt_output for tt_output.
       IF FIRST-OF(tt_output.field_22) then do:
 
       for each b_tt_output where b_tt_output.field_22 = tt_output.field_22
-      and b_tt_output.field_4 = "V" and b_tt_output.field_17 <> "":
+      and b_tt_output.field_4 = "V" and (b_tt_output.field_17 <> "" or b_tt_output.field_23 = 0):
          
          v-total-vat = 0 .
          for each b2_tt_output where b2_tt_output.field_22 = b_tt_output.field_22
@@ -728,7 +728,7 @@ procedure search_data :
                      
                end.
 
-               else if (GL.GLTypeCode = "STANDARD" or GL.GLTypeCode = "SYSTEM" ) then do:
+               else if (GL.GLTypeCode = "STANDARD" or GL.GLTypeCode = "SYSTEM" or (GL.GLTypeCode = "VAT" and  arr_line[17] = "")) then do:
                   
                   if ((CInvoiceVat.CInvoiceVatVatDebitTC - CInvoiceVat.CInvoiceVatVatCreditTC) -
                   (PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC) <= 0.01 
