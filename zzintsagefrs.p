@@ -236,8 +236,6 @@ define buffer b_tt_output for tt_output.
             next.
          else if (v-total-vat < b_tt_output.field_23) then do:
             
-            display v-total-vat.
-            display b_tt_output.field_23.
             do while v-res-compute <> 1 :
                run compute (input b_tt_output.field_22,input decimal(b_tt_output.field_23),input b_tt_output.field_15,input b_tt_output.field_17,input v-total-vat, output v-res-compute).
             end.
@@ -721,7 +719,6 @@ procedure search_data :
             arr_line[22] = string(num_line).
             arr_line[23] = "0" .
 
-            disp GL.GLTypeCode + " : " + GL.GLCode .
 
             
             
