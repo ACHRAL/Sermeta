@@ -717,7 +717,7 @@ procedure search_data :
             for each CInvoiceVat                                                
             where CInvoicevat.CInvoice_ID = CInvoice.CInvoice_ID                            
             no-lock:
-               if (GL.GLTypeCode = "VAT") then do:
+               if (GL.GLTypeCode = "VAT"  and (GL.GL_ID = CInvoiceVat.NormalTaxGL_ID or GL.GL_ID = CInvoiceVat.AbsRetTaxGL_ID) then do:
 
                   find first vat
                   where CInvoiceVat.Vat_ID = Vat.Vat_ID
