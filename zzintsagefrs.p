@@ -41,6 +41,7 @@ define  variable v_file                as character  format "x(60)"             
 define  variable v_op_path             as character                   no-undo.
 define  variable v_file_sp             as character initial ";"       no-undo.
 define  variable v_rexport             as     logical   initial  no           no-undo.
+define stream file_csv.
 
 
 
@@ -214,7 +215,6 @@ procedure write_csv:
 
 define buffer b_tt_output for tt_output.
    define buffer b2_tt_output for tt_output.
-   define stream file_csv.
    define var v-total-vat as decimal no-undo.
    define var v-res-compute as int no-undo.
    output stream file_csv to value (v_file).
