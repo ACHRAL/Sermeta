@@ -238,9 +238,9 @@ define buffer b_tt_output for tt_output.
             
             display v-total-vat.
             display b_tt_output.field_23.
-            do while v-res-compute <> 1 :
+            /*do while v-res-compute <> 1 :
                run compute (input b_tt_output.field_22,input decimal(b_tt_output.field_23),input b_tt_output.field_15,input b_tt_output.field_17,input v-total-vat, output v-res-compute).
-            end.
+            end.*/
          end.
 
       end.
@@ -364,7 +364,7 @@ procedure compute :
    for each bf1_tt_output where bf1_tt_output.field_22 = field_22 and bf1_tt_output.field_4 = "G"
             and bf1_tt_output.field_17 = "" :
                
-               if (v-total-va + decimal(bf1_tt_output.field_19)) = field_23 then do:
+               if (v-total-va + decimal(bf1_tt_output.field_15)) = field_23 then do:
 
                   bf1_tt_output.field_17 = field_17.
 
@@ -380,7 +380,7 @@ procedure compute :
 
 
                   v-res = 1.
-                  v-total-va = v-total-va + decimal(bf1_tt_output.field_19) .
+                  v-total-va = v-total-va + decimal(bf1_tt_output.field_15) .
                   leave.
 
                end.
@@ -389,7 +389,7 @@ procedure compute :
                if (v-total-va + decimal(bf1_tt_output.field_15)) < field_23 then do:
 
                   bf1_tt_output.field_17 = "-" .
-                  v-total-va = v-total-va + decimal(bf1_tt_output.field_19) .
+                  v-total-va = v-total-va + decimal(bf1_tt_output.field_15) .
                   v-res = 0.
                   run compute (input field_22,input field_23,input field_15,input field_17,input v-total-va,output v-res).
                   
