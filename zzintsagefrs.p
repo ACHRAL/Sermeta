@@ -429,16 +429,16 @@ procedure compute :
 
                if (v-total-va + decimal(bf1_tt_output.field_19)) > field_23 then do:
 
-                  v-res = - 1.
-                  bf1_tt_output.field_17 = "" .
+                  v-res = 0.
 
-                  for each bff_tt_output where bf1_tt_output.field_22 = field_22
+                  /*for each bff_tt_output where bf1_tt_output.field_22 = field_22
                   and bff_tt_output.field_17 = "-" :
                      bff_tt_output.field_17 = "".
                   end. 
 
                   
-                  leave.
+                  leave.*/
+                  next.
                   
                end.
 
