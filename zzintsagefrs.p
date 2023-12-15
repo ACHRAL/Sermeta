@@ -240,10 +240,7 @@ define buffer b_tt_output for tt_output.
          if (v-total-vat = b_tt_output.field_23) then
             next.
          else if (v-total-vat < b_tt_output.field_23) then do:
-
-            do while (v-res <> 0) :
-               run compute (input b_tt_output.field_22,input decimal(b_tt_output.field_23),input b_tt_output.field_15,input b_tt_output.field_17,input v-total-vat,input-output v-res).
-            end.
+            run compute (input b_tt_output.field_22,input decimal(b_tt_output.field_23),input b_tt_output.field_15,input b_tt_output.field_17,input v-total-vat,input 1).
          end.
 
 
@@ -442,6 +439,7 @@ procedure compute :
                v-counter = v-counter + 1.
 
             end.
+
             if (v-res <> 0) then do:
 
                for each bff_tt_output where bff_tt_output.field_22 = field_22
@@ -449,7 +447,9 @@ procedure compute :
                      bff_tt_output.field_17 = "".
                end. 
 
-               v-res = v-res + 1.
+               run compute (input field_22,input field_23,input field_15,input field_17,input v-total-va,input v-res + 1).
+            end.
+
 
             end.
 
