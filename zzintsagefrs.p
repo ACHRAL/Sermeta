@@ -969,7 +969,28 @@ procedure search_data :
 
                end.
             end.
+            if arr_line[17] = "" and GL.GLTypeCode <> "VAT"  then do :
+               for each APMatching no-lock
+               where APMatching.CInvoice_ID = CInvoice.CInvoice_ID
+               , first APMatchingLn no-lock
+               where APMatchingLn.APMatching_ID = APMatching.APMatching_ID
+               , first APMatchingLnTax
+               where APMatchingLnTax.APMatchingLn_ID = APMatchingLn.APMatchingLn_ID
+               no-lock:
+                  define var ii  as int .
 
+                  find first Vat of APMatchingLNTax
+                  no-lock no-error.
+                  if available Vat 
+                  then do: 
+
+                     
+                     arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
+                     message ii = ii + 1  "/" Glcode  "/" string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
+                  end.
+
+               end.
+            end. 
             /*if arr_line[17] = "" and GL.GLTypeCode <> "VAT" then do:
 
                for first APMatchingLN where APMatchingLN.PvoPostingLine_ID = PostingLine.PostingLine_ID:
