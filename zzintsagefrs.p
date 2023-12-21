@@ -402,7 +402,7 @@ define buffer b_tt_output for tt_output.
    empty temp-table tt_output.
 
 end.
-/*
+
 procedure compute :
 
    define input parameter field_22 as int no-undo.
@@ -466,7 +466,6 @@ procedure compute :
          v-total-va = v-total-va + decimal(bf1_tt_output.field_15) .
       end.
 
-      disp field_23 " = " v-total-va  " / "  bf1_tt_output.field_15.
 
       bf1_tt_output.field_17 = "-" .
 
@@ -522,7 +521,7 @@ procedure compute :
 
 
 end.
-*/
+
 procedure add_row :
 
    define input parameter i_arr_line as character extent 23.
