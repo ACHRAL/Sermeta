@@ -91,6 +91,9 @@ FUNCTION F_get_gn_parm returns character (input ip_fldname as character,
       else return v_path .
 END FUNCTION.  /* F_get_gn_parm */  
 
+
+
+
 /*
 function F_Date_Format returns character (input ip_date as date) :              
                                                                            
@@ -213,22 +216,25 @@ repeat:
 
 end.
 
+
 procedure write_csv:
 
 define buffer b_tt_output for tt_output.
    define buffer b2_tt_output for tt_output.
    define var v-total-vat as decimal no-undo.
    define var v-res as int no-undo.
+   define variable v_is_empty as logical initial no no-undo.
 
    
    output stream file_csv to value (v_file) append.
    for each tt_output 
-   break by field_22 :
+   break by field_22
+   :
 
       IF FIRST-OF(tt_output.field_22) then do:
 
       for each b_tt_output where b_tt_output.field_22 = tt_output.field_22
-      and b_tt_output.field_4 = "V" and b_tt_output.field_17 <> "" and b_tt_output.field_23 <> 0:
+      and b_tt_output.field_4 = "V" and b_tt_output.field_17 <> "" and b_tt_output.field_14 = "D":
          
          v-total-vat = 0 .
          v-res = 1.
@@ -240,11 +246,14 @@ define buffer b_tt_output for tt_output.
          if (v-total-vat = b_tt_output.field_23) then
             next.
          else if (v-total-vat < b_tt_output.field_23) then do:
-            run compute (input b_tt_output.field_22,input decimal(b_tt_output.field_23),input b_tt_output.field_15,input b_tt_output.field_17,input v-total-vat,input 1).
+            run compute (input b_tt_output.field_22,input decimal(b_tt_output.field_23),input b_tt_output.field_15,input b_tt_output.field_17,input decimal(0),input 1).
          end.
 
 
       end.
+      
+
+
 
       for each b_tt_output 
       where b_tt_output.field_22 = tt_output.field_22
@@ -276,12 +285,24 @@ define buffer b_tt_output for tt_output.
       end.
       end.
 
+      /*check if there is an empty TVA_PROFILE .*/
       
 
       for each b_tt_output 
       where b_tt_output.field_22 = tt_output.field_22
       and b_tt_output.field_4 <> "V" 
       and b_tt_output.field_4 <> "X":
+         /*
+         run P_Flag_INV_EMP_fl_17( input b_tt_output.field_9 ,
+                                output v_is_empty ).
+
+      if v_is_empty = no then do :
+         v_file = replace(v_file,"_error.txt",".txt").
+      end.
+      else do :
+         v_file = replace(v_file,"_error.txt",".txt").
+         v_file = replace(v_file,".txt","_error.txt").
+      end.*/
 
          put stream file_csv unformatted 
          b_tt_output.field_1    v_file_sp
@@ -311,13 +332,14 @@ define buffer b_tt_output for tt_output.
 
       for each b_tt_output 
       where b_tt_output.field_22 = tt_output.field_22
-      and b_tt_output.field_4 = "V":
+      and b_tt_output.field_4 = "V"
+      and decimal(b_tt_output.field_19) <> 0:
 
          put stream file_csv unformatted 
          b_tt_output.field_1    v_file_sp
          b_tt_output.field_2    v_file_sp
          b_tt_output.field_3    v_file_sp
-         b_tt_output.field_4    v_file_sp
+         "G"                    v_file_sp
          b_tt_output.field_5    v_file_sp
          b_tt_output.field_6    v_file_sp
          b_tt_output.field_7    v_file_sp
@@ -334,15 +356,16 @@ define buffer b_tt_output for tt_output.
          b_tt_output.field_18   v_file_sp
          b_tt_output.field_19   v_file_sp
          b_tt_output.field_20   v_file_sp
-         b_tt_output.field_21      
+         b_tt_output.field_23      
          skip.
          
       end.
-
+ 
       for each b_tt_output 
       where b_tt_output.field_22 = tt_output.field_22
       and b_tt_output.field_4 = "X":
 
+      
          put stream file_csv unformatted 
          b_tt_output.field_1    v_file_sp
          b_tt_output.field_2    v_file_sp
@@ -373,14 +396,13 @@ define buffer b_tt_output for tt_output.
 
    end.
    end.
-   
 
 
    output stream file_csv close.
    empty temp-table tt_output.
 
 end.
-
+/*
 procedure compute :
 
    define input parameter field_22 as int no-undo.
@@ -388,73 +410,119 @@ procedure compute :
    define input parameter field_15 as char no-undo.
    define input parameter field_17 as char no-undo.
    define input parameter v-total-va as decimal no-undo.
-   define input-output parameter v-res as int no-undo.
+   define input parameter v-res as int no-undo.
    define variable v-counter as int no-undo.
+   define variable v-max as int no-undo.
+   define variable v-rows as int no-undo.
+   define variable v-i as int no-undo.
+   define variable v-diff as decimal no-undo.
+   define variable v-first-total as decimal no-undo.
    define buffer bf1_tt_output for tt_output.
    define buffer bff_tt_output for tt_output.
 
-   for each bf1_tt_output where bf1_tt_output.field_22 = field_22 and bf1_tt_output.field_4 = "G"
-            and bf1_tt_output.field_17 = "" :
-               
-               if v-counter = v-res - 1  then
-                  next.
 
-               if (v-total-va + decimal(bf1_tt_output.field_15)) = field_23 then do:
+   for each bf1_tt_output 
+   where bf1_tt_output.field_22 = field_22 
+   and bf1_tt_output.field_4 = "G"
+   and bf1_tt_output.field_17 = "":
+       v-rows = v-rows + 1.
+   end.
 
-                  bf1_tt_output.field_17 = field_17.
-
-                  for each bff_tt_output where tt_output.field_22 = field_22
-                  and bff_tt_output.field_17 = "-" :
-                     bff_tt_output.field_17 = field_17.
-                  end. 
-
-                  /*for each bff_tt_output where tt_output.field_22 = field_22
-                  and bff_tt_output.field_17 = "" and bff_tt_output.field_4 = "A" and bff_tt_output.field_3 = bf1_tt_output.field_3:
-                     bff_tt_output.field_17 = field_17.
-                  end. */
-                  v-res = 0.
-
-                  v-total-va = v-total-va + decimal(bf1_tt_output.field_15) .
-                  leave.
-
-               end.
+   v-max = v-rows + 1 .
+   for each bf1_tt_output 
+   where bf1_tt_output.field_22 = field_22 
+   and bf1_tt_output.field_4 = "G"
+   and bf1_tt_output.field_17 = "":
+       v-max = v-max + (v-rows - 1).
+   end.
 
 
-               if (v-total-va + decimal(bf1_tt_output.field_15)) < field_23 then do:
+   
 
-                  bf1_tt_output.field_17 = "-" .
-                  v-total-va = v-total-va + decimal(bf1_tt_output.field_15) .
-                  run compute (input field_22,input field_23,input field_15,input field_17,input v-total-va,input-output v-res).
-                  
-               end.
+   for each bf1_tt_output 
+   where bf1_tt_output.field_22 = field_22 
+   and bf1_tt_output.field_4 = "G"
+   and bf1_tt_output.field_17 = "" :
+      
+      
+      if v-counter = v-res - 1  then do:
+         v-counter = v-counter + 1.
+         next.
+      end.
+         
+      if v-counter < (v-res - v-rows)  then do:
+         v-counter = v-counter + 1.
+         next.
+      end.
 
-               
-               if (v-total-va + decimal(bf1_tt_output.field_19)) > field_23 then do:
+      /*AC*/
+      if bf1_tt_output.field_14 = "C"
+      then do: 
+         v-diff = field_23 - (v-total-va - decimal(bf1_tt_output.field_15)) .
+         v-total-va = v-total-va - decimal(bf1_tt_output.field_15) .
+      end.
+      else do: 
+         v-diff = field_23 - (v-total-va + decimal(bf1_tt_output.field_15)) .
+         v-total-va = v-total-va + decimal(bf1_tt_output.field_15) .
+      end.
 
-                  
-                  next.
-                  
-               end.
+      disp field_23 " = " v-total-va  " / "  bf1_tt_output.field_15.
 
-               v-counter = v-counter + 1.
+      bf1_tt_output.field_17 = "-" .
 
-            end.
+      if v-diff = 0 or v-diff = 0.02 or v-diff = - 0.02 then do:
 
-            if (v-res <> 0) then do:
+         bf1_tt_output.field_17 = field_17.
 
-               for each bff_tt_output where bff_tt_output.field_22 = field_22
-                  and bff_tt_output.field_17 = "-" :
-                     bff_tt_output.field_17 = "".
-               end. 
+         for each bff_tt_output where tt_output.field_22 = field_22
+         and bff_tt_output.field_17 = "-" :
+            bff_tt_output.field_17 = field_17.
+         end. 
 
-               run compute (input field_22,input field_23,input field_15,input field_17,input v-total-va,input v-res + 1).
-            end.
+         /*for each bff_tt_output where tt_output.field_22 = field_22
+         and bff_tt_output.field_17 = "" and bff_tt_output.field_4 = "A" and bff_tt_output.field_3 = bf1_tt_output.field_3:
+            bff_tt_output.field_17 = field_17.
+         end. */
+         v-res = 0.
+
+         
+         leave.
+
+      end.
 
 
-            end.
+      else if v-diff > 0.02 then do:
+
+         bf1_tt_output.field_17 = "-" .
+         next.
+         
+      end.
+
+      
+      else if v-diff < - 0.02 then do:
+         bf1_tt_output.field_17 = "-" .
+         next.
+         
+      end.
+
+      v-counter = v-counter + 1.
+
+   end.
+
+   if (v-res <> 0 ) then do:
+      for each bff_tt_output where bff_tt_output.field_22 = field_22
+         and bff_tt_output.field_17 = "-" :
+            bff_tt_output.field_17 = "".
+      end. 
+      if (v-res) <= (v-max)  then
+      run compute (input field_22,input decimal(field_23),input field_15,input field_17,input 0,input v-res + 1).
+
+      //run compute (input field_22,input field_23,input field_15,input field_17,input v-total-va,input v-res + 1).
+   end.
+
 
 end.
-
+*/
 procedure add_row :
 
    define input parameter i_arr_line as character extent 23.
@@ -488,6 +556,25 @@ procedure add_row :
  
 
 end.
+
+
+
+PROCEDURE  P_Flag_INV_EMP_fl_17:
+   define input  parameter ip_field_9 as character no-undo.
+   define output parameter op_Is_empty as logical initial no no-undo. 
+
+   for first tt_output 
+   where field_9 = ip_field_9
+   and field_4   = "G"
+   and field_17 = "" :
+
+      op_Is_empty = yes.
+
+   end. /*for each tt_output*/
+
+
+END PROCEDURE. /*P_Flag_INV_EMP_fl_17*/
+
 procedure search_data :
 
    define variable arr as character extent.
@@ -661,7 +748,7 @@ procedure search_data :
             if Cinvoice.CinvoiceType = "INVOICE" 
             then arr_line[2] = "FF".
             else arr_line[2] = "AF".
-            
+            /*
             arr_line[3] = GL.GLCode.
             
             if (string(GL.GLCode)  begins "408" OR string(GL.GLCode)  begins "9") then do:
@@ -683,7 +770,69 @@ procedure search_data :
                   end.
 
             end.
-               
+            */   
+
+              /*arr_line[3] = GL.GLCode.*/
+            
+            /*if (string(GL.GLCode)  begins "408" OR string(GL.GLCode)  begins "9") then do:
+               define buffer zzGL for GL.
+               // find first Division
+               // where Division.Division_ID = Postingline.Division_ID
+               // no-lock no-error.
+               // if available Division then 
+               // arr_line[3] = string(Division.DivisionCode).
+
+
+               for first APMatchingLN where APMatchingLN.PvoPostingLine_ID = PostingLine.PostingLine_ID:
+                  
+                  find first zzGL
+                  where zzGL.GL_ID = APMatchingLN.GL_ID
+                  no-lock no-error.
+                  if available zzGL then 
+                  arr_line[3] = string(zzGL.GLCode).
+               end.
+
+            end.*/
+            
+            if substring(trim(string(GL.GLcode)),1,3)  <> "408"
+            then arr_line[3] = string(GL.GLCode).
+            else if (string(GL.GLcode) = "4081000"
+            OR  string(GL.GLcode) = "4081100" 
+            OR  string(Gl.GLcode) = "4081101"
+            ) Then do :
+               define buffer zzGL for GL.
+
+               if string(GL.GLcode) = "4081000"
+               or string(GL.GLcode) = "4081100"
+               then do:
+
+                  find first Division
+                  where Division.Division_ID = Postingline.Division_ID
+                  no-lock no-error.
+                  if available Division then do :
+                     arr_line[3] = string(Division.DivisionCode).
+                     string(Division.DivisionCode).
+                  end.
+
+               end. /*if string(GL.GLcode) = "4081000"...*/
+               else do :
+
+                  for first APMatchingLN 
+                  where APMatchingLN.PvoPostingLine_ID = PostingLine.PostingLine_ID
+                  no-lock :
+                     find first zzGL
+                     where zzGL.GL_ID = APMatchingLN.GL_ID
+                     no-lock no-error.
+                     if available zzGL then 
+                     arr_line[3] = string(zzGL.GLCode).
+                  end.
+
+
+               end. /*else do..*/
+                  
+            end. /*if (string(GL.GLcode)..*/
+
+
             //R001
 
             arr_line[5] = "".
@@ -854,14 +1003,14 @@ procedure search_data :
                         
                      end. /* for each vat */
                end. /*if (GL.GLTypeCode = "VAT") */
-            end. /*for each postingvat */*/
+            end. /*for each postingvat */
+            */
                
 
 
             if (GL.GLTypeCode = "SYSTEM" ) then do:
 
                arr_line[4] = "G".
-               arr_line[17] = "".
                /*find first PostingVat  
                where PostingVat.PostingLine_ID = PostingLine.PostingLine_ID
                no-lock no-error.
@@ -903,7 +1052,6 @@ procedure search_data :
             if (GL.GLTypeCode = "STANDARD") then do:
 
                arr_line[4] = "G".
-               arr_line[17] = "".
                /*find first PostingVat  
                where PostingVat.PostingLine_ID = PostingLine.PostingLine_ID
                no-lock no-error.
@@ -941,11 +1089,10 @@ procedure search_data :
             end.
 
             if (GL.GLTypeCode = "VAT" ) then do:
-               if decimal(arr_line[19]) <> 0 
-                  then do : 
+               
                      Cinvoice.CustomCombo0 = "exp" .
                      run add_row(input arr_line).
-                  END.
+                  
                /*Cinvoice.CustomCombo0 = "exp" .
                         run add_row(input arr_line). */
             END.
@@ -968,7 +1115,8 @@ procedure search_data :
 
 
       end.    
-   release Cinvoice.
+   release Cinvoice. 
+
    run write_csv.
                                                   
    end. 
