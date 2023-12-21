@@ -984,9 +984,10 @@ procedure search_data :
                   if available Vat 
                   then do: 
 
-                     
-                     arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
-                     message ii = ii + 1  "/" Glcode  "/" string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
+                     if APMatchingLN.PvoPostingLine_ID = PostingLine.PostingLine_ID then do:
+                        arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
+                        message ii = ii + 1  "/" Glcode  "/" string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
+                     end.
                   end.
 
                end.
