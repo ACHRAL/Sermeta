@@ -338,10 +338,10 @@ define buffer b_tt_output for tt_output.
 
       IF FIRST-OF(tt_output.field_22) then do:
 
-   /*for each bbb_tt_output 
-   where bbb_tt_output.field_22 = field_22 
+   for each bbb_tt_output 
+   where bbb_tt_output.field_22 = tt_output.field_22 
    and bbb_tt_output.field_4 = "G"
-   and (bbb_tt_output.field_17 = ""  or  bbb_tt_output.field_17 = "-" ) :*/
+   and (bbb_tt_output.field_17 = ""  or  bbb_tt_output.field_17 = "-" ) :
 
       for each b_tt_output where b_tt_output.field_22 = tt_output.field_22
       and b_tt_output.field_4 = "V" and b_tt_output.field_17 <> "" and b_tt_output.field_14 = "D":
@@ -362,13 +362,13 @@ define buffer b_tt_output for tt_output.
          else  do:
 
             a = P_Combinations(b_tt_output.field_23 , v-total-vat , 0 , b_tt_output.field_22 , b_tt_output.field_17).
-            message b_tt_output.field_23 + " " + v-total-vat.
+            message string(b_tt_output.field_23) + " " + string(v-total-vat).
          end.
         /*a =  P_Combinations( decimal(b_tt_output.field_23) , decimal(0) , 0 , b_tt_output.field_22 , b_tt_output.field_17).
         message a.*/
 
       end.
-   /*end.*/
+   end.
 
 
 
