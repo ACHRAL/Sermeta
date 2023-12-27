@@ -123,7 +123,7 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
          bff_tt_output.field_17 = field_17.
       end. 
 
-      return 1.
+      return P_Combinations(v-total, v-total - decimal(bf1_tt_output.field_15) , 0, field_22, field_17).
    end.
 
    v-count = 0.
@@ -164,7 +164,7 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
 
       end.
       else do : 
-         /*bf1_tt_output.field_17 = "".*/
+         bf1_tt_output.field_17 = "".
       end.
       
 
@@ -175,10 +175,10 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
 
    if (v-count = 0) then do:
 
-      for each bff_tt_output where tt_output.field_22 = field_22
+      /*for each bff_tt_output where tt_output.field_22 = field_22
          and bff_tt_output.field_17 = "-" :
             bff_tt_output.field_17 = "".
-      end. 
+      end.*/
 
    end.
    /*else do :
@@ -340,7 +340,7 @@ define buffer b_tt_output for tt_output.
       for each b_tt_output where b_tt_output.field_22 = tt_output.field_22
       and b_tt_output.field_4 = "V" and b_tt_output.field_17 <> "" and b_tt_output.field_14 = "D":
          define var a as decimal.
-         /*v-total-vat = 0 .
+         v-total-vat = 0 .
          v-res = 1.
          for each b2_tt_output where b2_tt_output.field_22 = b_tt_output.field_22
          and b2_tt_output.field_17 = b_tt_output.field_17 and  b2_tt_output.field_4 = "G":
@@ -349,11 +349,12 @@ define buffer b_tt_output for tt_output.
 
          if (v-total-vat = b_tt_output.field_23) then
             next.
-         else if (v-total-vat < b_tt_output.field_23) then do:
-            P_Combinations(b_tt_output.field_23,0,0,b_tt_output.field_22,b_tt_output.field_17).
-         end.*/
-        a =  P_Combinations( decimal(b_tt_output.field_23) , decimal(0) , 0 , b_tt_output.field_22 , b_tt_output.field_17).
-        message a.
+         else  do:
+            a = P_Combinations(b_tt_output.field_23 , v-total-vat , 0 , b_tt_output.field_22 , b_tt_output.field_17).
+            message a.
+         end.
+        /*a =  P_Combinations( decimal(b_tt_output.field_23) , decimal(0) , 0 , b_tt_output.field_22 , b_tt_output.field_17).
+        message a.*/
 
       end.
       
