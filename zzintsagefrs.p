@@ -164,7 +164,7 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
 
       end.
       else do : 
-         bf1_tt_output.field_17 = "".
+         /*bf1_tt_output.field_17 = "".*/
       end.
       
 
@@ -173,15 +173,15 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
 
    end.
 
-   /*if (v-count <> 0) then do:
+   if (v-count = 0) then do:
 
       for each bff_tt_output where tt_output.field_22 = field_22
          and bff_tt_output.field_17 = "-" :
-            bff_tt_output.field_17 = field_17.
+            bff_tt_output.field_17 = "".
       end. 
 
    end.
-   else do :
+   /*else do :
       for each bff_tt_output where tt_output.field_22 = field_22
          and bff_tt_output.field_17 = "-" :
             bff_tt_output.field_17 = "no".
