@@ -338,16 +338,14 @@ define buffer b_tt_output for tt_output.
 
       IF FIRST-OF(tt_output.field_22) then do:
 
-   
+   for each bbb_tt_output 
+   where bbb_tt_output.field_22 = tt_output.field_22 
+   and bbb_tt_output.field_4 = "G"
+   and (bbb_tt_output.field_17 = ""  or  bbb_tt_output.field_17 = "-" ) :
 
       for each b_tt_output where b_tt_output.field_22 = tt_output.field_22
       and b_tt_output.field_4 = "V" and b_tt_output.field_17 <> "" and b_tt_output.field_14 = "D":
          
-         for each bbb_tt_output 
-   where bbb_tt_output.field_22 = tt_output.field_22 
-   and bbb_tt_output.field_4 = "G"
-   and (bbb_tt_output.field_17 = ""  or  bbb_tt_output.field_17 = "-" ) :
-   
          define var a as decimal.
          v-total-vat = 0 .
          v-res = 1.
@@ -1094,7 +1092,7 @@ procedure search_data :
 
                end.
             end.
-            if arr_line[17] = "" and GL.GLTypeCode <> "VAT"  then do :
+            /*if arr_line[17] = "" and GL.GLTypeCode <> "VAT"  then do :
                for each APMatching no-lock
                where APMatching.CInvoice_ID = CInvoice.CInvoice_ID
                , first APMatchingLn no-lock
@@ -1116,7 +1114,7 @@ procedure search_data :
                   end.
 
                end.
-            end. 
+            end. */
             /*if arr_line[17] = "" and GL.GLTypeCode <> "VAT" then do:
 
                for first APMatchingLN where APMatchingLN.PvoPostingLine_ID = PostingLine.PostingLine_ID:
