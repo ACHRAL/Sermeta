@@ -452,7 +452,7 @@ procedure compute :
       if (v-diff <> 0 and v-diff <> 0.02 and v-diff <> - 0.02) then do:
 
          bf1_tt_output.field_17 = "-" .
-         v-count = compute(v-total, v-sum + decimal(bf1_tt_output.field_15) , i + 1, field_22).
+         v-count = compute(v-total, v-sum + decimal(bf1_tt_output.field_15) , i + 1, field_22, field_17).
       end.
 
 
