@@ -349,6 +349,7 @@ define buffer b_tt_output for tt_output.
          define var a as decimal.
          v-total-vat = 0 .
          v-res = 1.
+         a = 0.
          
          for each b2_tt_output where b2_tt_output.field_22 = b_tt_output.field_22
          and b2_tt_output.field_17 = b_tt_output.field_17 and  b2_tt_output.field_4 = "G":
