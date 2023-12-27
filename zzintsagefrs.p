@@ -325,6 +325,7 @@ procedure write_csv:
 
 define buffer b_tt_output for tt_output.
    define buffer b2_tt_output for tt_output.
+   define buffer bbb_tt_output for tt_output.
    define var v-total-vat as decimal no-undo.
    define var v-res as int no-undo.
    define variable v_is_empty as logical initial no no-undo.
