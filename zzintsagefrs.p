@@ -123,7 +123,7 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
          bff_tt_output.field_17 = field_17.
       end. 
 
-      return P_Combinations(v-total, v-total - decimal(bf1_tt_output.field_15) , 0, field_22, field_17).
+      return 1.
    end.
 
    v-count = 0.
