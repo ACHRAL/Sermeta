@@ -344,10 +344,8 @@ define buffer b_tt_output for tt_output.
    and (bbb_tt_output.field_17 = ""  or  bbb_tt_output.field_17 = "-" ) :
 
       for each b_tt_output where b_tt_output.field_22 = tt_output.field_22
-      and b_tt_output.field_4 = "V" and b_tt_output.field_17 <> "" and b_tt_output.field_14 = "D"
-      break by b_tt_output.field_23:
-         if first-of (b_tt_output.field_23)
-         then do :
+      and b_tt_output.field_4 = "V" and b_tt_output.field_17 <> "" and b_tt_output.field_14 = "D" :
+         
          define var a as decimal.
          v-total-vat = 0 .
          v-res = 1.
@@ -356,6 +354,7 @@ define buffer b_tt_output for tt_output.
          for each b2_tt_output where b2_tt_output.field_22 = b_tt_output.field_22
          and b2_tt_output.field_17 = b_tt_output.field_17 and  b2_tt_output.field_4 = "G":
             v-total-vat = v-total-vat + decimal(b2_tt_output.field_15).
+            disp string(decimal(b2_tt_output.field_15)).
          end.
 
          if (v-total-vat = b_tt_output.field_23) then do:
@@ -363,11 +362,9 @@ define buffer b_tt_output for tt_output.
             next.
          end.
          else  do:
-         do while (a <> 0) :
             a = P_Combinations(b_tt_output.field_23 , v-total-vat , 0 , b_tt_output.field_22 , b_tt_output.field_17).
             message string(b_tt_output.field_23) + " " + string(v-total-vat) + " " + string (a).
-         end.
-         end.
+
          end.
         /*a =  P_Combinations( decimal(b_tt_output.field_23) , decimal(0) , 0 , b_tt_output.field_22 , b_tt_output.field_17).
         message a.*/
