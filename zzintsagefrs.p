@@ -354,11 +354,12 @@ define buffer b_tt_output for tt_output.
             v-total-vat = v-total-vat + decimal(b2_tt_output.field_15).
          end.
 
-         if (v-total-vat = b_tt_output.field_23) then
+         if (v-total-vat = b_tt_output.field_23) then do:
+            b2_tt_output.field_17 = b_tt_output.field_17.
             next.
+         end.
          else  do:
             a = P_Combinations(b_tt_output.field_23 , v-total-vat , 0 , b_tt_output.field_22 , b_tt_output.field_17).
-            message a.
          end.
         /*a =  P_Combinations( decimal(b_tt_output.field_23) , decimal(0) , 0 , b_tt_output.field_22 , b_tt_output.field_17).
         message a.*/
@@ -366,28 +367,8 @@ define buffer b_tt_output for tt_output.
       end.
    end.
 
-   for each b_tt_output where b_tt_output.field_22 = tt_output.field_22
-      and b_tt_output.field_4 = "V" and b_tt_output.field_17 <> "" and b_tt_output.field_14 = "D":
-         
-         define var a as decimal.
-         v-total-vat = 0 .
-         v-res = 1.
-         for each b2_tt_output where b2_tt_output.field_22 = b_tt_output.field_22
-         and b2_tt_output.field_17 = b_tt_output.field_17 and  b2_tt_output.field_4 = "G":
-            v-total-vat = v-total-vat + decimal(b2_tt_output.field_15).
-         end.
 
-         if (v-total-vat = b_tt_output.field_23) then
-            next.
-         else  do:
-            a = P_Combinations(b_tt_output.field_23 , v-total-vat , 0 , b_tt_output.field_22 , b_tt_output.field_17).
-            message a.
-         end.
-        /*a =  P_Combinations( decimal(b_tt_output.field_23) , decimal(0) , 0 , b_tt_output.field_22 , b_tt_output.field_17).
-        message a.*/
 
-      end.
-      
       
 
 
