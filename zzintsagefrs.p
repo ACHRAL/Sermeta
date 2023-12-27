@@ -111,27 +111,28 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
    for each bf1_tt_output 
    where bf1_tt_output.field_22 = field_22 
    and bf1_tt_output.field_4 = "G"
-   and (bf1_tt_output.field_17 = "") :
+   and (bf1_tt_output.field_17 = ""  or  bf1_tt_output.field_17 = "-" )  :
        v-len = v-len + 1.
    end.
 
 
 
    if v-total = v-sum then do:
-      /*for each bff_tt_output where tt_output.field_22 = field_22
+      for each bff_tt_output where tt_output.field_22 = field_22
       and bff_tt_output.field_17 = "-" :
          bff_tt_output.field_17 = field_17.
-      end. */
+      end. 
 
       return 1.
    end.
+
    v-count = 0.
    i = 0 .
 
    for each bf1_tt_output 
    where bf1_tt_output.field_22 = field_22 
    and bf1_tt_output.field_4 = "G"
-   and (bf1_tt_output.field_17 = "") :
+   and (bf1_tt_output.field_17 = ""  or  bf1_tt_output.field_17 = "-" ) :
 
       if i >= v-index and i < v-len then do:
 
@@ -146,9 +147,9 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
       end.
       message v-diff view-as alert-box.*/
 
-      if (v-sum + decimal(bf1_tt_output.field_15) <= v-total then do:
+      if (v-sum + decimal(bf1_tt_output.field_15) <= v-total) then do:
 
-         /*bf1_tt_output.field_17 = "-" .*/
+         bf1_tt_output.field_17 = "-" .
          v-count = v-count + P_Combinations(v-total, v-sum + decimal(bf1_tt_output.field_15) , i + 1, field_22, field_17).
       end.
       /*else if v-diff = 0 or v-diff = 0.02 or v-diff = - 0.02 then do:
@@ -161,6 +162,9 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
       end.*/
 
 
+      end.
+      else do : 
+         bf1_tt_output.field_17 = "".
       end.
       
 
