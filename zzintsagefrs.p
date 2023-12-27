@@ -363,7 +363,7 @@ define buffer b_tt_output for tt_output.
          else  do:
          do while (a = 0) :
             a = P_Combinations(b_tt_output.field_23 , v-total-vat , 0 , b_tt_output.field_22 , b_tt_output.field_17).
-            message string(b_tt_output.field_23) + " " + string(v-total-vat).
+            message string(b_tt_output.field_23) + " " + string(v-total-vat) + string (a).
          end.
          end.
         /*a =  P_Combinations( decimal(b_tt_output.field_23) , decimal(0) , 0 , b_tt_output.field_22 , b_tt_output.field_17).
