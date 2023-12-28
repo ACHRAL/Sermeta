@@ -136,18 +136,18 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
 
       if i >= v-index and i < v-len then do:
 
-        /* if bf1_tt_output.field_14 = "C"
-      then do: 
-         v-diff = v-total - (v-sum - decimal(bf1_tt_output.field_15)) .
+         if bf1_tt_output.field_14 = "C"
+         then do: 
+            v-diff = v-total - (v-sum - decimal(bf1_tt_output.field_15)) .
          /*v-total-va = v-sum - decimal(bf1_tt_output.field_15) .*/
-      end.
-      else do: 
-         v-diff = v-total - (v-sum + decimal(bf1_tt_output.field_15)) .
+         end.
+         else do: 
+            v-diff = v-total - (v-sum + decimal(bf1_tt_output.field_15)) .
          /*v-total-va = v-total-va + decimal(bf1_tt_output.field_15) .*/
-      end.
-      message v-diff view-as alert-box.*/
+         end.
 
-      if (v-sum + decimal(bf1_tt_output.field_15) <= v-total) then do:
+      if (v-diff > 0.02 or v-diff < - 0.02) then do:
+      /*if (v-sum + decimal(bf1_tt_output.field_15) <= v-total) then do:*/
 
          bf1_tt_output.field_17 = "-" .
          v-count = v-count + P_Combinations(v-total, v-sum + decimal(bf1_tt_output.field_15) , i + 1, field_22, field_17).
@@ -353,9 +353,11 @@ define buffer b_tt_output for tt_output.
          for each b2_tt_output where b2_tt_output.field_22 = b_tt_output.field_22
          and b2_tt_output.field_17 = b_tt_output.field_17 and  b2_tt_output.field_4 = "G":
 
-            v-total-vat = v-total-vat + decimal(b2_tt_output.field_15).
+            if b2_tt_output.field_14 = "D" then
+               v-total-vat = v-total-vat + decimal(b2_tt_output.field_15).
+            else 
+               v-total-vat = v-total-vat - decimal(b2_tt_output.field_15).
 
-            disp string(decimal(b2_tt_output.field_15)).
 
          end.
 
