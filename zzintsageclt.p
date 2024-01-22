@@ -78,6 +78,7 @@ define temp-table tt_output
    field field_18 as character
    field field_19 as character
    field field_20 as integer
+   field field_21 as character
 .
 
 
@@ -227,7 +228,7 @@ repeat:
    .
 
    v_op_path = F_get_gn_parm("Sage_Sales_Inter" , "Yes").
-
+  
    if v_op_path <> "" then do :
       if v_rexport = yes then 
       run search_data(input "exp",
@@ -251,6 +252,7 @@ repeat:
                            input v_entity_to).
             
       v_file =  v_op_path + v_file  .
+      //v_file = "/apps/qad2020ee/build/work/telnet/test/" + v_file.
 
       run P_generate_file (input ";" ).
    end. /*if v_op_path <> "" then do */
@@ -297,7 +299,9 @@ PROCEDURE add_row :
    tt_output.field_17 = i_arr_line[17].
    tt_output.field_18 = i_arr_line[18].
    tt_output.field_19 = i_arr_line[19].
-   tt_output.field_20  = decimal(i_arr_line[20]).
+   tt_output.field_20 = decimal(i_arr_line[20]).
+   tt_output.field_21 = i_arr_line[21].
+
 
 END PROCEDURE. /*PROCEDURE add_row*/
 
@@ -327,8 +331,8 @@ PROCEDURE search_data :
    define variable voucher  as character no-undo.
    define variable voucher_f as integer   no-undo.
    define variable voucher_t as integer   no-undo.
-   define variable date_f as integer      no-undo.
-   define variable date_t as integer      no-undo.
+   define variable year_f as integer      no-undo.
+   define variable year_t as integer      no-undo.
    define variable journal_f as character no-undo.
    define variable journal_t as character no-undo.
 
@@ -340,12 +344,14 @@ PROCEDURE search_data :
       voucher_f = integer(ENTRY(3,v_ref_fr,"/"))
       voucher_t = integer(ENTRY(3,v_ref_to,"/"))
 
-      date_f = integer(ENTRY(1,v_ref_fr,"/"))
-      date_t = integer(ENTRY(1,v_ref_to,"/"))
+      year_f = integer(ENTRY(1,v_ref_fr,"/"))
+      year_t = integer(ENTRY(1,v_ref_to,"/"))
 
       journal_f = string(ENTRY(2,v_ref_fr,"/"))
       journal_t = string(ENTRY(2,v_ref_to,"/"))
    .
+   disp .
+   
    end.
 
    else do:
@@ -353,8 +359,8 @@ PROCEDURE search_data :
          voucher_f = 000000000
          voucher_t = 999999999
 
-         date_f = 0000
-         date_t = 9999
+         year_f = 0000
+         year_t = 9999
 
          journal_f = "A"
          journal_t = "ZZZZZZZZ"
@@ -365,9 +371,9 @@ PROCEDURE search_data :
 
    for each DInvoice exclusive-lock
    where  DInvoice.DInvoiceVoucher     >=  voucher_f 
-   and    DInvoice.DInvoiceVoucher     <=    voucher_t
-   and    DInvoice.DInvoicePostingYear >=  date_f
-   and    DInvoice.DInvoicePostingYear <=  date_t
+   and    DInvoice.DInvoiceVoucher     <=  voucher_t
+   and    DInvoice.DInvoicePostingYear >=  year_f
+   and    DInvoice.DInvoicePostingYear <=  year_t
    and    DInvoice.DInvoiceDate        >= ip_invo_date_fr
    and    DInvoice.DInvoiceDate        <= ip_invo_date_to
    and    (Dinvoice.DInvoiceType       = "CREDITNOTE"
@@ -430,24 +436,8 @@ PROCEDURE search_data :
       where  Currency.Currency_ID  = DInvoice.DInvoiceCurrency_ID 
       no-lock no-error. 
       if available Currency then v_currency_code = Currency.CurrencyCode.
-      define variable a as integer initial 0  no-undo.
-      define variable b as character  initial "" no-undo.
-         
-      for each DInvoiceVat                                                
-      where Dinvoicevat.Dinvoice_iD = Dinvoice.Dinvoice_ID                            
-      no-lock:
-       
-         a = a + 1 .
-         if a = 2 then do : 
-            b = "" .
-            leave. 
-         end.
-         find first vat 
-         where DInvoiceVat.Vat_ID = Vat.Vat_ID
-         no-lock no-error.
-         if available vat then  b = string("C" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
 
-      end.
+      
 
       num_line = num_line + 1.
 
@@ -502,7 +492,18 @@ PROCEDURE search_data :
          end. /*if decimal(arr_line[15]) < 0 then do*/
 
          
-         arr_line[17] = b .
+         //arr_line[17] = b .
+         for each DInvoiceVat                                                
+         where Dinvoicevat.Dinvoice_iD = DInvoicePosting.Dinvoice_ID                            
+         no-lock:
+   
+            find first vat 
+            where DInvoiceVat.Vat_ID = Vat.Vat_ID
+            no-lock no-error.
+            if available vat then arr_line[17] = string("C" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
+   
+         end.
+         
          arr_line[18] = v_currency_code.
 
          arr_line[19] = string(PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC).
@@ -510,12 +511,13 @@ PROCEDURE search_data :
          if (decimal(arr_line[19]) < 0) then
          arr_line[19] = string(-1 * decimal(arr_line[19])).
          arr_line[20] = string(num_line).
+         arr_line[21] = string(Dinvoice.DinvoiceDitext).
 
 
          for each DInvoiceVat                                                
          where Dinvoicevat.Dinvoice_iD = Dinvoice.Dinvoice_ID                            
          no-lock:
-            if (GL.GLTypeCode = "VAT" and GL.GL_ID = DInvoiceVat.NormalTaxGL_ID) then do:
+            if (GL.GLTypeCode = "VAT" and (GL.GL_ID = Dinvoicevat.NormalTaxGL_ID or GL.GL_ID = Dinvoicevat.AbsRetTaxGL_ID)) then do:
                
                find first vat 
                where DInvoiceVat.Vat_ID = Vat.Vat_ID
@@ -620,17 +622,17 @@ PROCEDURE search_data :
                arr_line[17] = "".
                arr_line[4] = "V".
                
-               if decimal(arr_line[19]) <> 0 
+               /*if decimal(arr_line[19]) <> 0 
                then do :
-                  
-                  find first vat 
-                  where DInvoiceVat.Vat_ID = Vat.Vat_ID
-                  no-lock no-error.
-                  if available vat then  arr_line[17] = string("C" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
-                  run add_row(input arr_line). 
-                  Dinvoice.CustomCombo0 = "exp" .
+               end. /*iif decimal(arr_line[19]) <> 0 .. */*/   
+               find first vat 
+               where DInvoiceVat.Vat_ID = Vat.Vat_ID
+               no-lock no-error.
+               if available vat then  arr_line[17] = string("C" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
+               run add_row(input arr_line). 
+               Dinvoice.CustomCombo0 = "exp" .
 
-               end. /*iif decimal(arr_line[19]) <> 0 .. */
+               
 
             end. /*if (GL.GLTypeCode = "VAT") then do:*/
          end.
@@ -661,6 +663,7 @@ PROCEDURE P_generate_file:
    define input parameter  v_file_sp as character no-undo.
    output stream file_csv to value (v_file).
    define buffer b_tt_output for tt_output.
+
    for each tt_output 
    break by field_20 :
 
@@ -668,7 +671,8 @@ PROCEDURE P_generate_file:
       for each b_tt_output 
       where b_tt_output.field_20 = tt_output.field_20
       and b_tt_output.field_4 <> "V" 
-      and b_tt_output.field_4 <> "X":
+      and b_tt_output.field_4 <> "X"
+      and decimal(b_tt_output.field_19) <> 0 :
 
          put stream file_csv unformatted 
          b_tt_output.field_1    v_file_sp
@@ -689,14 +693,16 @@ PROCEDURE P_generate_file:
          b_tt_output.field_16   v_file_sp
          b_tt_output.field_17   v_file_sp
          b_tt_output.field_18   v_file_sp
-         b_tt_output.field_19     
+         b_tt_output.field_19   v_file_sp
+         b_tt_output.field_21 
          skip.
          
       end.
 
       for each b_tt_output 
       where b_tt_output.field_20 = tt_output.field_20
-      and b_tt_output.field_4 = "V":
+      and b_tt_output.field_4 = "V"
+      and decimal(b_tt_output.field_19) <> 0 :
 
          put stream file_csv unformatted 
          b_tt_output.field_1    v_file_sp
@@ -717,7 +723,8 @@ PROCEDURE P_generate_file:
          b_tt_output.field_16   v_file_sp
          b_tt_output.field_17   v_file_sp
          b_tt_output.field_18   v_file_sp
-         b_tt_output.field_19      
+         b_tt_output.field_19   v_file_sp
+         b_tt_output.field_21    
          skip.
          
       end.
@@ -745,7 +752,8 @@ PROCEDURE P_generate_file:
          b_tt_output.field_16   v_file_sp
          b_tt_output.field_17   v_file_sp
          b_tt_output.field_18   v_file_sp
-         b_tt_output.field_19   
+         b_tt_output.field_19   v_file_sp
+         b_tt_output.field_21 
          skip.
          
       end.
