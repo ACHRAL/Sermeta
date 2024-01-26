@@ -731,7 +731,8 @@ PROCEDURE P_generate_file:
 
       for each b_tt_output 
       where b_tt_output.field_20 = tt_output.field_20
-      and b_tt_output.field_4 = "X":
+      and b_tt_output.field_4 = "X"
+      and decimal(b_tt_output.field_19) <> 0 :
 
          put stream file_csv unformatted 
          b_tt_output.field_1    v_file_sp
