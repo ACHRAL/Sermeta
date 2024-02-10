@@ -278,7 +278,7 @@ repeat:
 
    assign
       v_op_path = ""
-      v_file = "Pur_Interface_Sage_"
+      v_file = "TESTS_SONIA_BIZID/Pur_Interface_Sage_"
                + string(day(today),"99")                
                + string(month(today),"99")              
                + string(year(today),"9999")             
@@ -372,17 +372,9 @@ define buffer b_tt_output for tt_output.
          end.
       end.
          
-        /*a =  P_Combinations( decimal(b_tt_output.field_23) , decimal(0) , 0 , b_tt_output.field_22 , b_tt_output.field_17).
-        message a.*/
+        
 
       end.
-
-
-
-
-
-
-      
 
 
 
@@ -769,6 +761,7 @@ procedure search_data :
    and    CInvoice.CInvoiceDate        >=  v_datef_from
    and    CInvoice.CInvoiceDate        <=  v_datef_to
    and    Cinvoice.CustomCombo0        =    i_exp
+   and    CInvoice.CInvoiceIsOpen      = yes
    and    (CInvoice.CInvoiceType = "CREDITNOTE" 
             OR CInvoice.CInvoiceType = "INVOICE")
    ,first  Creditor  no-lock
@@ -790,15 +783,16 @@ procedure search_data :
    and Journal.JournalCode <= journal_t
    no-lock:
 
-
+      
       if   Cinvoice.CinvoiceType = "INVOICE" then do:
 
-         find first zz_cinvoice where zz_cinvoice.CinvoiceType = "CREDITNOTE" and zz_cinvoice.CInvoiceReference = Cinvoice.CInvoiceReference
+         /*find first zz_cinvoice where zz_cinvoice.CinvoiceType = "CREDITNOTE" and zz_cinvoice.CInvoiceReference = Cinvoice.CInvoiceReference
          and zz_cinvoice.CustomCombo0 = Cinvoice.CustomCombo0 no-lock no-error.
          
          if available zz_cinvoice then do:
+            disp "1".
                next.
-         end.
+         end.*/
 
          find first CInvoicePO where CInvoicePO.CInvoice_ID = Cinvoice.CInvoice_ID no-lock no-error.
 
