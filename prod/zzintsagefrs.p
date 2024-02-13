@@ -120,7 +120,7 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
    if v-total = v-sum then do:
       for each bff_tt_output where tt_output.field_22 = field_22
       and bff_tt_output.field_17 = "-" :
-         bff_tt_output.field_17 = field_17.
+         /*bff_tt_output.field_17 = field_17.*/
       end. 
 
       return 1.
@@ -165,7 +165,7 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
 
       end.
       else do : 
-         bf1_tt_output.field_17 = "".
+         bf1_tt_output.field_17 = "no".
       end.
       
 
@@ -369,7 +369,6 @@ define buffer b_tt_output for tt_output.
          end.
          else  do:
             a = P_Combinations(b_tt_output.field_23 , v-total-vat , 0 , b_tt_output.field_22 , b_tt_output.field_17).
-            run compute (input b_tt_output.field_22,input decimal(b_tt_output.field_23),input b_tt_output.field_15,input b_tt_output.field_17,input v-total-vat,input 0).
          end.
       end.
          
