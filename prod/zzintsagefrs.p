@@ -785,7 +785,7 @@ procedure search_data :
 
       
       if   Cinvoice.CinvoiceType = "INVOICE" then do:
-
+         if CInvoice.CInvoiceOriginalCreditTC = 0 then next.
          /*find first zz_cinvoice where zz_cinvoice.CinvoiceType = "CREDITNOTE" and zz_cinvoice.CInvoiceReference = Cinvoice.CInvoiceReference
          and zz_cinvoice.CustomCombo0 = Cinvoice.CustomCombo0 no-lock no-error.
          
@@ -823,7 +823,7 @@ procedure search_data :
       end.
 
       if  Cinvoice.CinvoiceType = "CREDITNOTE" then do:
-
+         if CInvoice.CInvoiceOriginalDebitTC = 0 then next.
          find first zz_cinvoice where zz_cinvoice.CinvoiceType = "INVOICE" and zz_cinvoice.CInvoiceReference = Cinvoice.CInvoiceReference 
          and zz_cinvoice.CustomCombo0 = Cinvoice.CustomCombo0 no-lock no-error.
 
@@ -1180,7 +1180,24 @@ procedure search_data :
 
                find first CostCentre                                                    
                where CostCentre.CostCentre_ID = Postingline.CostCentre_ID               
-               no-lock no-error.  
+               no-lock no-error.
+
+               for first APMatchingLN 
+                  where APMatchingLN.PvoPostingLine_ID = PostingLine.PostingLine_ID
+                  no-lock :
+                     
+                     if APMatchingLN.APMatchingLNPVodItemType = "MEMOITEM" then do:
+
+                        find first CostCentre                                                    
+                        where CostCentre.CostCentre_ID = APMatchingLN.CostCentre_ID               
+                        no-lock no-error.
+
+                        find first project                                                       
+                        where  Project.Project_ID = APMatchingLN.Project_ID
+                        no-lock no-error.
+
+                     end.
+               end.
                
                if (available CostCentre) then
                      arr_line[6] = CostCentre.CostCentreCode. else arr_line[6] = "".
