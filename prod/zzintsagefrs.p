@@ -134,18 +134,18 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
    and bf1_tt_output.field_4 = "G"
    and (bf1_tt_output.field_17 = ""  or  bf1_tt_output.field_17 = "-" or  bf1_tt_output.field_17 = "no") :
 
-      if i >= (v-index - 1) and i < v-len then do:
+      if i >= (v-index) and i < v-len then do:
          
          bf1_tt_output.field_17 = "-" .
          if bf1_tt_output.field_14 = "C"
          then do: 
             v-diff = v-sum - decimal(bf1_tt_output.field_15) .
-            v-count = v-count + P_Combinations(v-total, v-sum - decimal(bf1_tt_output.field_15) , i + 1, field_22, field_17).
+            v-count = v-count + P_Combinations(v-total, v-sum - decimal(bf1_tt_output.field_15) , v-index + 1, field_22, field_17).
          /*v-total-va = v-sum - decimal(bf1_tt_output.field_15) .*/
          end.
          else do: 
             v-diff = v-sum + decimal(bf1_tt_output.field_15) .
-            v-count = v-count + P_Combinations(v-total, v-sum + decimal(bf1_tt_output.field_15) , i + 1, field_22, field_17).
+            v-count = v-count + P_Combinations(v-total, v-sum + decimal(bf1_tt_output.field_15) , v-index + 1, field_22, field_17).
          /*v-total-va = v-total-va + decimal(bf1_tt_output.field_15) .*/
          end.
 
