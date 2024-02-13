@@ -111,7 +111,7 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
    for each bf1_tt_output 
    where bf1_tt_output.field_22 = field_22 
    and bf1_tt_output.field_4 = "G"
-   and (bf1_tt_output.field_17 = ""  or  bf1_tt_output.field_17 = "-" )  :
+   and (bf1_tt_output.field_17 = ""  or  bf1_tt_output.field_17 = "-" bf1_tt_output.field_17 = "no")  :
        v-len = v-len + 1.
    end.
 
