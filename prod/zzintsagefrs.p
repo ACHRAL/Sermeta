@@ -107,11 +107,13 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
    define variable i as int no-undo.
    define variable v-len as int no-undo.
 
+   if v-index = 5000 then leave.
+
 
    for each bf1_tt_output 
    where bf1_tt_output.field_22 = field_22 
    and bf1_tt_output.field_4 = "G"
-   and (bf1_tt_output.field_17 = ""  or  bf1_tt_output.field_17 = "-" bf1_tt_output.field_17 = "no")  :
+   and (bf1_tt_output.field_17 = ""  or  bf1_tt_output.field_17 = "-" or bf1_tt_output.field_17 = "no")  :
        v-len = v-len + 1.
    end.
 
@@ -134,20 +136,21 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
    and bf1_tt_output.field_4 = "G"
    and (bf1_tt_output.field_17 = ""  or  bf1_tt_output.field_17 = "-" or  bf1_tt_output.field_17 = "no") :
 
-      if i >= (v-index) and i < v-len then do:
+      if i >= (v-index) and i <= v-len then do:
          
          bf1_tt_output.field_17 = "-" .
          if bf1_tt_output.field_14 = "C"
          then do: 
             v-diff = v-sum - decimal(bf1_tt_output.field_15) .
-            v-count = v-count + P_Combinations(v-total, v-sum - decimal(bf1_tt_output.field_15) , v-index + 1, field_22, field_17).
+            v-count = v-count + P_Combinations(v-total, v-sum - decimal(bf1_tt_output.field_15) , i + 1 , field_22, field_17).
          /*v-total-va = v-sum - decimal(bf1_tt_output.field_15) .*/
          end.
          else do: 
             v-diff = v-sum + decimal(bf1_tt_output.field_15) .
-            v-count = v-count + P_Combinations(v-total, v-sum + decimal(bf1_tt_output.field_15) , v-index + 1, field_22, field_17).
+            v-count = v-count + P_Combinations(v-total, v-sum + decimal(bf1_tt_output.field_15) , i + 1 , field_22, field_17).
          /*v-total-va = v-total-va + decimal(bf1_tt_output.field_15) .*/
          end.
+
 
 
          
@@ -164,9 +167,9 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
 
 
       end.
-      else do : 
+      /*else do : 
          bf1_tt_output.field_17 = "no".
-      end.
+      end.*/
       
 
       
