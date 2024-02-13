@@ -134,7 +134,7 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
    and bf1_tt_output.field_4 = "G"
    and (bf1_tt_output.field_17 = ""  or  bf1_tt_output.field_17 = "-" or  bf1_tt_output.field_17 = "no") :
 
-      if i >= v-index and i < v-len then do:
+      if i >= v-index and i <= v-len then do:
          
          bf1_tt_output.field_17 = "-" .
          if bf1_tt_output.field_14 = "C"
