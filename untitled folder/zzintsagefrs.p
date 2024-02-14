@@ -244,9 +244,6 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
        bf1_tt_output.field_17 = "" .
    end.
    
-   end.
-   **********/
-
    return v-count.
    
 END FUNCTION .
