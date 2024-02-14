@@ -1,4 +1,40 @@
+/******************************************************************************/
+/* Program name  : zzintsageclt.p                                             */
+/* Title         : Interface factures clients                                 */
+/*                                                                            */
+/* Purpose       : Interface factures clients pour exporter vers sage         */
+/*                                                                            */
+/* Author        : Achref Laayouni                                            */
+/* Creation date : 11/08/23                                                   */
+/* ECO #         :                                                            */
+/* Model         : QAD EE                                                     */
+/******************************************************************************/
+/* (c) copyright CSI, unpublished work                                        */
+/* this computer program includes confidential, proprietary information       */
+/* and is a trade secret of CSI                                               */
+/* all use, disclosure, and/or reproduction is prohibited unless authorized   */
+/* in writing. all rights reserved.                                           */
+/******************************************************************************/
+/*v8:convertmode=report                                                       */
+/*----------------------------------------------------------------------------*/
+/*  Modif.       ! Auteur ! Date     ! Commentaires                           */
+/*---------------!--------!----------!----------------------------------------*/
+/*  2020-SAGE    !  AL    ! 31/08/23 ! Creation                               */
+/******************************************************************************/
+
 {us/mf/mfdtitle.i}
+
+/*******************************************************************************
+ _______                      _______    _     _
+|__   __|                    |__   __|  | |   | |
+   | | ___ _ __ ___  _ __ ______| | __ _| |__ | | ___  ___
+   | |/ _ \ '_ ` _ \| '_ \______| |/ _` | '_ \| |/ _ \/ __|
+   | |  __/ | | | | | |_) |     | | (_| | |_) | |  __/\__ \
+   |_|\___|_| |_| |_| .__/      |_|\__,_|_.__/|_|\___||___/
+                  | |
+                  |_|                                             TEMP-TABLES
+*******************************************************************************/
+
 define temp-table tt_output
    field field_1  as character
    field field_2  as character
@@ -26,6 +62,14 @@ define temp-table tt_output
 .
 
 
+/*******************************************************************************
+__      __        _       _     _
+\ \    / /       (_)     | |   | |
+ \ \  / /_ _ _ __ _  __ _| |__ | | ___  ___
+  \ \/ / _` | '__| |/ _` | '_ \| |/ _ \/ __|
+   \  / (_| | |  | | (_| | |_) | |  __/\__ \
+    \/ \__,_|_|  |_|\__,_|_.__/|_|\___||___/                          VARIABLES
+*******************************************************************************/
 
 define  variable v_entity_from         as character   format "x(30)"              no-undo.
 define  variable v_entity_to           as character   format "x(30)"              no-undo.
@@ -44,7 +88,14 @@ define  variable v_file_sp             as character initial ";"       no-undo.
 define  variable v_rexport             as     logical   initial  no           no-undo.
 define stream file_csv.
 
-
+/*******************************************************************************
+______
+|  ____|
+| |__ _ __ __ _ _ __ ___   ___  ___
+|  __| '__/ _` | '_ ` _ \ / _ \/ __|
+| |  | | | (_| | | | | | |  __/\__ \
+|_|  |_|  \__,_|_| |_| |_|\___||___/                                     FRAMES
+*******************************************************************************/
 
 Form 
    v_entity_from     colon 12 label "Entite"
@@ -71,6 +122,15 @@ form
 with frame reprint_frame down width 400.
 /* SET EXTERNAL labelS */
 setframelabels(frame reprint_frame:handle).
+
+/***************************************************************************************************
+ ______               _   _
+|  ____|             | | (_)
+| |__ ___  _ __   ___| |_ _  ___  _ __  ___
+|  __/ _ \| '_ \ / __| __| |/ _ \| '_ \/ __|
+| | | (_) | | | | (__| |_| | (_) | | | \__ \
+|_|  \___/|_| |_|\___|\__|_|\___/|_| |_|___/                                             FONCTIONS
+***************************************************************************************************/
 
 FUNCTION F_get_gn_parm returns character (input ip_fldname as character, 
                                        input ip_value   as character ):
@@ -144,23 +204,16 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
          then do: 
             v-diff = v-sum - decimal(bf1_tt_output.field_15) .
             v-count = v-count + P_Combinations(v-total, v-sum - decimal(bf1_tt_output.field_15) , i + 1 , field_22, field_17).
-         /*v-total-va = v-sum - decimal(bf1_tt_output.field_15) .*/
          end.
          else do: 
             v-diff = v-sum + decimal(bf1_tt_output.field_15) .
             v-count = v-count + P_Combinations(v-total, v-sum + decimal(bf1_tt_output.field_15) , i + 1 , field_22, field_17).
-         /*v-total-va = v-total-va + decimal(bf1_tt_output.field_15) .*/
          end.
 
 
 
       end.
-      /*else do : 
-         bf1_tt_output.field_17 = "".
-      end.*/
-      
 
-      
       i = i + 1 .
 
    end.
@@ -175,33 +228,8 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
 
    return v-count.
    
-
-   
 END FUNCTION .
 
-
-
-
-/*
-function F_Date_Format returns character (input ip_date as date) :              
-                                                                           
-   define variable v_date  as character no-undo.   
-   define variable v_month   as character no-undo.
-
-   if length(month(ip_date)) < 2 
-   then  v_month = "0" + string(month(ip_date)).
-   else  v_month = string(month(ip_date)).
-
-   v_date = string(day(ip_date)) + "" +                                            
-            v_month + "" +                                 
-            substring(string(year(ip_date)), 3 , 2 )
-         .  
-
-   return v_date .   
-                  
-                                                
-END FUNCTION. /*F_Date_Format*/
-*/
 
 function F_Date_Format returns character (input ip_date as date) :              
                                                                         
@@ -226,6 +254,15 @@ function F_Date_Format returns character (input ip_date as date) :
                                                         
 END FUNCTION. /*F_Date_Format*/
 
+
+/*******************************************************************************
+ __  __          _____ _   _ _      ____   ____  _____
+|  \/  |   /\   |_   _| \ | | |    / __ \ / __ \|  __ \
+| \  / |  /  \    | | |  \| | |   | |  | | |  | | |__) |
+| |\/| | / /\ \   | | | . ` | |   | |  | | |  | |  ___/
+| |  | |/ ____ \ _| |_| |\  | |___| |__| | |__| | |
+|_|  |_/_/    \_\_____|_| \_|______\____/ \____/|_|                    MAINLOOP
+*******************************************************************************/
 
 mainloop:
 repeat:
@@ -295,19 +332,20 @@ repeat:
    else 
       run search_data(input "").
 
-
-   
-   
-   
-
-
-
 end.
 
+/*******************************************************************************
+_____                        _
+|  __ \                      | |
+| |__) | __ ___   ___ ___  __| |_   _ _ __ ___  ___
+|  ___/ '__/ _ \ / __/ _ \/ _` | | | | '__/ _ \/ __|
+| |   | | | (_) | (_|  __/ (_| | |_| | | |  __/\__ \
+|_|   |_|  \___/ \___\___|\__,_|\__,_|_|  \___||___/                 PROCEDURES
+*******************************************************************************/ 
 
 procedure write_csv:
 
-define buffer b_tt_output for tt_output.
+   define buffer b_tt_output for tt_output.
    define buffer b2_tt_output for tt_output.
    define buffer bbb_tt_output for tt_output.
    define var v-total-vat as decimal no-undo.
@@ -398,17 +436,7 @@ define buffer b_tt_output for tt_output.
       where b_tt_output.field_22 = tt_output.field_22
       and b_tt_output.field_4 <> "V" 
       and b_tt_output.field_4 <> "X":
-         /*
-         run P_Flag_INV_EMP_fl_17( input b_tt_output.field_9 ,
-                                output v_is_empty ).
 
-      if v_is_empty = no then do :
-         v_file = replace(v_file,"_error.txt",".txt").
-      end.
-      else do :
-         v_file = replace(v_file,"_error.txt",".txt").
-         v_file = replace(v_file,".txt","_error.txt").
-      end.*/
 
          put stream file_csv unformatted 
          b_tt_output.field_1    v_file_sp
@@ -510,126 +538,6 @@ define buffer b_tt_output for tt_output.
 end.
 
 
-
-procedure compute :
-
-   define input parameter field_22 as int no-undo.
-   define input parameter field_23 as decimal no-undo.
-   define input parameter field_15 as char no-undo.
-   define input parameter field_17 as char no-undo.
-   define input parameter v-total-va as decimal no-undo.
-   define input parameter v-res as int no-undo.
-   define variable v-counter as int no-undo.
-   define variable v-max as int no-undo.
-   define variable v-rows as int no-undo.
-   define variable v-i as int no-undo.
-   define variable v-diff as decimal no-undo.
-   define variable v-first-total as decimal no-undo.
-   define buffer bf1_tt_output for tt_output.
-   define buffer bff_tt_output for tt_output.
-
-
-   for each bf1_tt_output 
-   where bf1_tt_output.field_22 = field_22 
-   and bf1_tt_output.field_4 = "G"
-   and bf1_tt_output.field_17 = "":
-       v-rows = v-rows + 1.
-   end.
-
-   v-max = v-rows + 1 .
-   for each bf1_tt_output 
-   where bf1_tt_output.field_22 = field_22 
-   and bf1_tt_output.field_4 = "G"
-   and bf1_tt_output.field_17 = "":
-       v-max = v-max + (v-rows - 1).
-   end.
-
-
-   
-
-   for each bf1_tt_output 
-   where bf1_tt_output.field_22 = field_22 
-   and bf1_tt_output.field_4 = "G"
-   and bf1_tt_output.field_17 = "" :
-      
-      
-      if v-counter = v-res - 1  then do:
-         v-counter = v-counter + 1.
-         next.
-      end.
-         
-      if v-counter < (v-res - v-rows)  then do:
-         v-counter = v-counter + 1.
-         next.
-      end.
-
-      /*AC*/
-      if bf1_tt_output.field_14 = "C"
-      then do: 
-         v-diff = field_23 - (v-total-va - decimal(bf1_tt_output.field_15)) .
-         v-total-va = v-total-va - decimal(bf1_tt_output.field_15) .
-      end.
-      else do: 
-         v-diff = field_23 - (v-total-va + decimal(bf1_tt_output.field_15)) .
-         v-total-va = v-total-va + decimal(bf1_tt_output.field_15) .
-      end.
-
-
-      bf1_tt_output.field_17 = "-" .
-
-      if v-diff = 0 or v-diff = 0.02 or v-diff = - 0.02 then do:
-
-         bf1_tt_output.field_17 = field_17.
-
-         for each bff_tt_output where tt_output.field_22 = field_22
-         and bff_tt_output.field_17 = "-" :
-            bff_tt_output.field_17 = field_17.
-         end. 
-
-         /*for each bff_tt_output where tt_output.field_22 = field_22
-         and bff_tt_output.field_17 = "" and bff_tt_output.field_4 = "A" and bff_tt_output.field_3 = bf1_tt_output.field_3:
-            bff_tt_output.field_17 = field_17.
-         end. */
-         v-res = 0.
-
-         
-         leave.
-
-      end.
-
-
-      else if v-diff > 0.02 then do:
-
-         bf1_tt_output.field_17 = "-" .
-         next.
-         
-      end.
-
-      
-      else if v-diff < - 0.02 then do:
-         bf1_tt_output.field_17 = "-" .
-         next.
-         
-      end.
-
-      v-counter = v-counter + 1.
-
-   end.
-
-   if (v-res <> 0 ) then do:
-      for each bff_tt_output where bff_tt_output.field_22 = field_22
-         and bff_tt_output.field_17 = "-" :
-            bff_tt_output.field_17 = "".
-      end. 
-      if (v-res) <= (v-max)  then
-      run compute (input field_22,input decimal(field_23),input field_15,input field_17,input 0,input v-res + 1).
-
-      //run compute (input field_22,input field_23,input field_15,input field_17,input v-total-va,input v-res + 1).
-   end.
-
-
-end.
-
 procedure add_row :
 
    define input parameter i_arr_line as character extent 23.
@@ -664,23 +572,6 @@ procedure add_row :
 
 end.
 
-
-
-PROCEDURE  P_Flag_INV_EMP_fl_17:
-   define input  parameter ip_field_9 as character no-undo.
-   define output parameter op_Is_empty as logical initial no no-undo. 
-
-   for first tt_output 
-   where field_9 = ip_field_9
-   and field_4   = "G"
-   and field_17 = "" :
-
-      op_Is_empty = yes.
-
-   end. /*for each tt_output*/
-
-
-END PROCEDURE. /*P_Flag_INV_EMP_fl_17*/
 
 procedure search_data :
 
@@ -767,15 +658,9 @@ procedure search_data :
    no-lock:
 
       
-      if   Cinvoice.CinvoiceType = "INVOICE" then do:
+      if  Cinvoice.CinvoiceType = "INVOICE" then do:
          if CInvoice.CInvoiceOriginalCreditTC = 0 then next.
-         /*find first zz_cinvoice where zz_cinvoice.CinvoiceType = "CREDITNOTE" and zz_cinvoice.CInvoiceReference = Cinvoice.CInvoiceReference
-         and zz_cinvoice.CustomCombo0 = Cinvoice.CustomCombo0 no-lock no-error.
-         
-         if available zz_cinvoice then do:
-            disp "1".
-               next.
-         end.*/
+
 
          find first CInvoicePO where CInvoicePO.CInvoice_ID = Cinvoice.CInvoice_ID no-lock no-error.
 
@@ -796,10 +681,6 @@ procedure search_data :
 
                end.
          end.
-
-         /*else do:
-               if Reason.ReasonCode <> "AP-NPO-Alloc" then next.
-         end.*/
          
 
             
@@ -857,51 +738,7 @@ procedure search_data :
             if Cinvoice.CinvoiceType = "INVOICE" 
             then arr_line[2] = "FF".
             else arr_line[2] = "AF".
-            /*
-            arr_line[3] = GL.GLCode.
-            
-            if (string(GL.GLCode)  begins "408" OR string(GL.GLCode)  begins "9") then do:
-               define buffer zzGL for GL.
-               // find first Division
-               // where Division.Division_ID = Postingline.Division_ID
-               // no-lock no-error.
-               // if available Division then 
-               // arr_line[3] = string(Division.DivisionCode).
 
-
-                  for first APMatchingLN where APMatchingLN.PvoPostingLine_ID = PostingLine.PostingLine_ID:
-                     
-                     find first zzGL
-                     where zzGL.GL_ID = APMatchingLN.GL_ID
-                     no-lock no-error.
-                     if available zzGL then 
-                     arr_line[3] = string(zzGL.GLCode).
-                  end.
-
-            end.
-            */   
-
-              /*arr_line[3] = GL.GLCode.*/
-            
-            /*if (string(GL.GLCode)  begins "408" OR string(GL.GLCode)  begins "9") then do:
-               define buffer zzGL for GL.
-               // find first Division
-               // where Division.Division_ID = Postingline.Division_ID
-               // no-lock no-error.
-               // if available Division then 
-               // arr_line[3] = string(Division.DivisionCode).
-
-
-               for first APMatchingLN where APMatchingLN.PvoPostingLine_ID = PostingLine.PostingLine_ID:
-                  
-                  find first zzGL
-                  where zzGL.GL_ID = APMatchingLN.GL_ID
-                  no-lock no-error.
-                  if available zzGL then 
-                  arr_line[3] = string(zzGL.GLCode).
-               end.
-
-            end.*/
             
             if substring(trim(string(GL.GLcode)),1,3)  <> "408"
             then arr_line[3] = string(GL.GLCode).
@@ -944,12 +781,8 @@ procedure search_data :
 
             //R001
 
-            arr_line[5] = "".
-            //arr_line[5] = string("F" + Creditor.CreditorCode).
-            
+            arr_line[5] = "".            
             arr_line[6] = "".
-
-
             arr_line[7] = "".
             arr_line[8] = "".
 
@@ -966,12 +799,8 @@ procedure search_data :
             arr_line[10] = v_subaccount.
             arr_line[11] = CInvoice.CInvoiceDescription.
             arr_line[12] = "".
-            
             arr_line[13] = "".
-            //arr_line[13] = F_Date_Format(CInvoice.CInvoiceDueDate).
-
             arr_line[14] = "D" .
-
             arr_line[15] = string(PostingLine.PostingLineDebitLC - PostingLine.PostingLineCreditLC).
 
             if decimal(arr_line[15]) < 0 then do:
@@ -981,29 +810,18 @@ procedure search_data :
 
             
             arr_line[16] = CInvoice.CInvoiceReference.
-
             arr_line[17] = "".
-
-            
-            
             arr_line[18] = v_currency_code.
-
-
             arr_line[19] = string(PostingLine.PostingLineDebitTC - PostingLine.PostingLineCreditTC).
 
             if (decimal(arr_line[19]) < 0) then
             arr_line[19] = string(-1 * decimal(arr_line[19])).
 
-            
             arr_line[20] = F_Date_Format(CInvoice.CInvoicePostingDate).
-
             arr_line[21] = "".
             arr_line[22] = string(num_line).
             arr_line[23] = "0" .
 
-
-            
-            
             for each CInvoiceVat                                                
             where CInvoicevat.CInvoice_ID = CInvoice.CInvoice_ID                            
             no-lock:
@@ -1079,79 +897,10 @@ procedure search_data :
 
                end.
             end.
-            /*if arr_line[17] = "" and GL.GLTypeCode <> "VAT"  then do :
-               for each APMatching no-lock
-               where APMatching.CInvoice_ID = CInvoice.CInvoice_ID
-               , first APMatchingLn no-lock
-               where APMatchingLn.APMatching_ID = APMatching.APMatching_ID
-               , first APMatchingLnTax
-               where APMatchingLnTax.APMatchingLn_ID = APMatchingLn.APMatchingLn_ID
-               no-lock:
-                  define var ii  as int .
-
-                  find first Vat of APMatchingLNTax
-                  no-lock no-error.
-                  if available Vat 
-                  then do: 
-
-                     if APMatchingLN.PvoPostingLine_ID = PostingLine.PostingLine_ID then do:
-                        arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
-                        //message ii = ii + 1  "/" Glcode  "/" string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
-                     end.
-                  end.
-
-               end.
-            end. */
-            /*if arr_line[17] = "" and GL.GLTypeCode <> "VAT" then do:
-
-               for first APMatchingLN where APMatchingLN.PvoPostingLine_ID = PostingLine.PostingLine_ID:
-                  
-                  for first APMatchingLNTax of APMatchingLN:
-                     for first Vat of APMatchingLNTax:
-                        arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
-                     end.
-
-                  end.
-
-               end.
-
-            end.
-
-            for each postingvat 
-            where PostingVat.PostingLine_ID = PostingLine.PostingLine_ID
-            no-lock : 
-               if (GL.GLTypeCode <> "VAT") then do:
-
-                  /*arr_line[4] = "V".
-                  arr_line[17] = "".*/
-                    
-                     for each vat 
-                     where PostingVat.Vat_ID = Vat.Vat_ID
-                     no-lock :
-                        arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
-                        /*Cinvoice.CustomCombo0 = "exp" .
-                        run add_row(input arr_line). */
-                        
-                     end. /* for each vat */
-               end. /*if (GL.GLTypeCode = "VAT") */
-            end. /*for each postingvat */
-            */
-               
-
-
+           
             if (GL.GLTypeCode = "SYSTEM" ) then do:
 
                arr_line[4] = "G".
-               /*find first PostingVat  
-               where PostingVat.PostingLine_ID = PostingLine.PostingLine_ID
-               no-lock no-error.
-               if available PostingVat then find first vat                                                              
-               where vat.vat_ID = PostingVat.vat_ID                            
-               no-lock no-error.                                                          
-               if available vat then arr_line[17] = "D" + vat.VatCode + " " + "-" + " " + vat.VatDescription.*/
-
-             
-
                run add_row(input arr_line).
                Cinvoice.CustomCombo0 = "exp" .  
 
@@ -1200,18 +949,8 @@ procedure search_data :
             if (GL.GLTypeCode = "STANDARD") then do:
 
                arr_line[4] = "G".
-               /*find first PostingVat  
-               where PostingVat.PostingLine_ID = PostingLine.PostingLine_ID
-               no-lock no-error.
-               if available PostingVat then find first vat                                                              
-               where vat.vat_ID = PostingVat.vat_ID                            
-               no-lock no-error.                                                          
-               if available vat then arr_line[17] = "D" + vat.VatCode + " " + "-" + " " + vat.VatDescription.*/
-               
-
                run add_row(input arr_line).
                Cinvoice.CustomCombo0 = "exp". 
-
                arr_line[4] = "A".
 
                find first project                                                       
@@ -1238,26 +977,22 @@ procedure search_data :
 
             if (GL.GLTypeCode = "VAT" ) then do:
                
-                     Cinvoice.CustomCombo0 = "exp" .
-                     run add_row(input arr_line).
-                  
-               /*Cinvoice.CustomCombo0 = "exp" .
-                        run add_row(input arr_line). */
+                  Cinvoice.CustomCombo0 = "exp" .
+                  run add_row(input arr_line).
             END.
 
             
 
          if GL.GLTypeCode = "CREDITORCONTROL" then do:
             arr_line[5]   =  v_subaccount.
-            /*arr_line[5] = string("F" + Creditor.CreditorCode).*/
             arr_line[4] = "X".
             arr_line[12] = "VI".
             arr_line[17] = "".
             arr_line[13] = F_Date_Format(CInvoice.CInvoiceDueDate).
 
-
             run add_row(input arr_line).
-            Cinvoice.CustomCombo0 = "exp" .  
+            Cinvoice.CustomCombo0 = "exp" .
+
          end.
 
 
@@ -1268,8 +1003,5 @@ procedure search_data :
    run write_csv.
                                                   
    end. 
-   
-   
-
    
 end procedure.
