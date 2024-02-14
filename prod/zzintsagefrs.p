@@ -107,19 +107,18 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
    define variable i as int no-undo.
    define variable v-len as int no-undo.
 
-   if v-index = 5000 then leave.
+   
 
 
    for each bf1_tt_output 
    where bf1_tt_output.field_22 = field_22 
    and bf1_tt_output.field_4 = "G"
-   and (bf1_tt_output.field_17 = ""  or  bf1_tt_output.field_17 = "-" or bf1_tt_output.field_17 = "no")  :
+   and (bf1_tt_output.field_17 = ""  or  bf1_tt_output.field_17 = "-")  :
        v-len = v-len + 1.
    end.
 
 
-
-   if v-total = v-sum then do:
+   if v-total = v-sum or v-total = (v-sum + 0.02) or v-total = (v-sum - 0.02) then do:
       for each bff_tt_output where tt_output.field_22 = field_22
       and bff_tt_output.field_17 = "-" :
          bff_tt_output.field_17 = field_17.
@@ -128,13 +127,15 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
       return 1.
    end.
 
+   if v-index = 5000 then leave.
+
    v-count = 0.
    i = 0 .
 
    for each bf1_tt_output 
    where bf1_tt_output.field_22 = field_22 
    and bf1_tt_output.field_4 = "G"
-   and (bf1_tt_output.field_17 = ""  or  bf1_tt_output.field_17 = "-" or  bf1_tt_output.field_17 = "no") :
+   and (bf1_tt_output.field_17 = ""  or  bf1_tt_output.field_17 = "-") :
 
       if i >= (v-index) and i <= v-len then do:
          
@@ -153,22 +154,9 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
 
 
 
-         
-         
-      
-      /*else if v-diff = 0 or v-diff = 0.02 or v-diff = - 0.02 then do:
-         for each bff_tt_output where tt_output.field_22 = field_22
-         and bff_tt_output.field_17 = "-" :
-            bff_tt_output.field_17 = field_17.
-         end. 
-   
-         leave.
-      end.*/
-
-
       end.
       /*else do : 
-         bf1_tt_output.field_17 = "no".
+         bf1_tt_output.field_17 = "".
       end.*/
       
 
@@ -177,21 +165,13 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
 
    end.
 
-   if (v-count = 0) then do:
-
-      /*for each bff_tt_output where tt_output.field_22 = field_22
-         and bff_tt_output.field_17 = "-" :
-            bff_tt_output.field_17 = "".
-      end.*/
-
+   for each bf1_tt_output 
+   where bf1_tt_output.field_22 = field_22 
+   and bf1_tt_output.field_4 = "G"
+   bf1_tt_output.field_17 = "-"  :
+       bf1_tt_output.field_17 = "" .
    end.
-   /*else do :
-      for each bff_tt_output where tt_output.field_22 = field_22
-         and bff_tt_output.field_17 = "-" :
-            bff_tt_output.field_17 = "no".
-         end. 
    
-   end.*/
 
    return v-count.
    
@@ -371,7 +351,7 @@ define buffer b_tt_output for tt_output.
             next.
          end.
          else  do:
-            a = P_Combinations(b_tt_output.field_23 , v-total-vat , 0 , b_tt_output.field_22 , b_tt_output.field_17).
+            a = P_Combinations(b_tt_output.field_23 - v-total-vat , v-total-vat , 0 , b_tt_output.field_22 , b_tt_output.field_17).
          end.
       end.
          
@@ -482,7 +462,7 @@ define buffer b_tt_output for tt_output.
          b_tt_output.field_18   v_file_sp
          b_tt_output.field_19   v_file_sp
          b_tt_output.field_20   v_file_sp
-         b_tt_output.field_21      
+         b_tt_output.field_23
          skip.
          
       end.
