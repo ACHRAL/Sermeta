@@ -261,7 +261,7 @@ repeat:
 
    assign
       v_op_path = ""
-      v_file = "TESTS_SONIA_BIZID/Pur_Interface_Sage_"
+      v_file = "Pur_Interface_Sage_"
                + string(day(today),"99")                
                + string(month(today),"99")              
                + string(year(today),"9999")             
