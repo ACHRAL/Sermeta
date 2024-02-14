@@ -82,7 +82,7 @@ define  variable v_datef_to            like CInvoice.CInvoiceDueDate            
 define  variable v_datev_from          like CInvoice.CInvoiceDueDate                      no-undo.
 define  variable v_datev_to            like CInvoice.CInvoiceDueDate                      no-undo.
 define  variable v_rexp                as logical     initial  no                 no-undo.
-define  variable v_file                as character  format "x(60)"               no-undo.
+define  variable v_file                as character  format "x(50)"               no-undo.
 define  variable v_op_path             as character                   no-undo.
 define  variable v_file_sp             as character initial ";"       no-undo.
 define  variable v_rexport             as     logical   initial  no           no-undo.
