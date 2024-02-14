@@ -4,10 +4,10 @@
 /*                                                                            */
 /* Purpose       : Interface factures clients pour exporter vers sage         */
 /*                                                                            */
-/* Author        : Achref Laayouni                                            */
+/* Author        : Mohamed Mokrani                                            */
 /* Creation date : 11/08/23                                                   */
 /* ECO #         :                                                            */
-/* Model         : QAD EE                                                     */
+/* Model         : QAD EE2020                                                 */
 /******************************************************************************/
 /* (c) copyright CSI, unpublished work                                        */
 /* this computer program includes confidential, proprietary information       */
@@ -19,7 +19,7 @@
 /*----------------------------------------------------------------------------*/
 /*  Modif.       ! Auteur ! Date     ! Commentaires                           */
 /*---------------!--------!----------!----------------------------------------*/
-/*  2020-SAGE    !  AL    ! 31/08/23 ! Creation                               */
+/*  2020-SAGE    !  MM    ! 31/08/23 ! Creation                               */
 /******************************************************************************/
 
 {us/mf/mfdtitle.i}
