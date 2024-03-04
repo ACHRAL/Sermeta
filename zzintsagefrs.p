@@ -1,4 +1,69 @@
+/******************************************************************************/
+/* Program name  : zzintsagefrs.p                                             */
+/* Title         : Interface factures fournisseur                             */
+/*                                                                            */
+/* Purpose       : Interface factures fournisseur pour exporter vers sage     */
+/*                                                                            */
+/* Author        :                                                            */
+/* Creation date : 11/08/23                                                   */
+/* ECO #         :                                                            */
+/* Model         : QAD EE                                                     */
+/******************************************************************************/
+/* (c) copyright CSI, unpublished work                                        */
+/* this computer program includes confidential, proprietary information       */
+/* and is a trade secret of CSI                                               */
+/* all use, disclosure, and/or reproduction is prohibited unless authorized   */
+/* in writing. all rights reserved.                                           */
+/******************************************************************************/
+/*v8:convertmode=report                                                       */
+/*----------------------------------------------------------------------------*/
+/*  Modif.       ! Auteur ! Date     ! Commentaires                           */
+/*---------------!--------!----------!----------------------------------------*/
+/*  2020-SAGE    !  AL    ! 31/08/23 ! Creation                               */
+/******************************************************************************/
+
 {us/mf/mfdtitle.i}
+
+/*******************************************************************************
+__      __        _       _     _
+\ \    / /       (_)     | |   | |
+ \ \  / /_ _ _ __ _  __ _| |__ | | ___  ___
+  \ \/ / _` | '__| |/ _` | '_ \| |/ _ \/ __|
+   \  / (_| | |  | | (_| | |_) | |  __/\__ \
+    \/ \__,_|_|  |_|\__,_|_.__/|_|\___||___/                          VARIABLES
+*******************************************************************************/
+define variable v_entity_from        as character   format "x(30)"              no-undo.
+define variable v_entity_to          as character   format "x(30)"              no-undo.
+define variable v_piece_from         as character   format "x(30)"              no-undo.
+define variable v_piece_to           as character   format "x(30)"              no-undo.
+define variable v_four_from          as character   format "x(30)"              no-undo.
+define variable v_four_to            as character   format "x(30)"              no-undo.
+define variable v_datef_from         like CInvoice.CInvoiceDueDate              no-undo.
+define variable v_datef_to           like CInvoice.CInvoiceDueDate              no-undo.
+define variable v_datev_from         like CInvoice.CInvoiceDueDate              no-undo.
+define variable v_datev_to           like CInvoice.CInvoiceDueDate              no-undo.
+define variable v_rexp               as logical     initial  no                 no-undo.
+define variable v_file               as character  format "x(60)"               no-undo.
+define variable v_file_name          as character  format "x(40)"               no-undo.
+define variable v_op_path            as character  format "x(40)"               no-undo.
+define variable v_file_sp            as character initial ";"                   no-undo.
+define variable v_rexport            as     logical   initial  no               no-undo.
+define variable v_postingdate_from   like CInvoice.CInvoicePostingDate          no-undo.
+define variable v_postingdate_to     like CInvoice.CInvoicePostingDate          no-undo.
+
+define stream file_csv.
+
+
+/*******************************************************************************
+ _______                      _______    _     _
+|__   __|                    |__   __|  | |   | |
+   | | ___ _ __ ___  _ __ ______| | __ _| |__ | | ___  ___
+   | |/ _ \ '_ ` _ \| '_ \______| |/ _` | '_ \| |/ _ \/ __|
+   | |  __/ | | | | | |_) |     | | (_| | |_) | |  __/\__ \
+   |_|\___|_| |_| |_| .__/      |_|\__,_|_.__/|_|\___||___/
+                  | |
+                  |_|                                             TEMP-TABLES
+*******************************************************************************/
 define temp-table tt_output
    field field_1  as character
    field field_2  as character
@@ -26,40 +91,32 @@ define temp-table tt_output
 .
 
 
-
-define  variable v_entity_from         as character   format "x(30)"              no-undo.
-define  variable v_entity_to           as character   format "x(30)"              no-undo.
-define  variable v_piece_from          as character   format "x(30)"              no-undo.
-define  variable v_piece_to            as character   format "x(30)"              no-undo.
-define  variable v_four_from           as character   format "x(30)"              no-undo.
-define  variable v_four_to             as character   format "x(30)"              no-undo.
-define  variable v_datef_from          like CInvoice.CInvoiceDueDate                      no-undo.
-define  variable v_datef_to            like CInvoice.CInvoiceDueDate                      no-undo.
-define  variable v_datev_from          like CInvoice.CInvoiceDueDate                      no-undo.
-define  variable v_datev_to            like CInvoice.CInvoiceDueDate                      no-undo.
-define  variable v_rexp                as logical     initial  no                 no-undo.
-define  variable v_file                as character  format "x(60)"               no-undo.
-define  variable v_op_path             as character                   no-undo.
-define  variable v_file_sp             as character initial ";"       no-undo.
-define  variable v_rexport             as     logical   initial  no           no-undo.
-define stream file_csv.
-
-
-
+/*******************************************************************************
+______
+|  ____|
+| |__ _ __ __ _ _ __ ___   ___  ___
+|  __| '__/ _` | '_ ` _ \ / _ \/ __|
+| |  | | | (_| | | | | | |  __/\__ \
+|_|  |_|  \__,_|_| |_| |_|\___||___/                                     FRAMES
+*******************************************************************************/
 Form 
-   v_entity_from     colon 12 label "Entite"
-   v_entity_to       colon 47 label "A"
-   v_piece_from      colon 12 label "Piece"
-   v_piece_to        colon 47 label "A"
-   v_four_from       colon 12 label "Fournisseur"
-   v_four_to         colon 47 label "A"
-   v_datef_from      colon 17 label "Date facturation"
-   v_datef_to        colon 47 label "A"
-   v_datev_from      colon 17 label "Date validite"
-   v_datev_to        colon 47 label "A"
-   v_rexp            colon 17 label "rexport"
+   v_entity_from      colon 12 label "Entite"
+   v_entity_to        colon 47 label "A"
+   v_piece_from       colon 12 label "Piece"
+   v_piece_to         colon 47 label "A"
+   v_four_from        colon 12 label "Fournisseur"
+   v_four_to          colon 47 label "A"
+   v_datef_from       colon 27 label "Date facturation"
+   v_datef_to         colon 47 label "A"
+   v_datev_from       colon 27 label "Date validite"
+   v_datev_to         colon 47 label "A"
+   v_postingdate_from colon 27 label "Date comptabilisation"
+   v_postingdate_to   colon 47 label "A"
+   v_rexp             colon 27 label "Réexporter"
    skip(1) // LINE BREAK
-   v_file            colon 20 label "LIEN de L'EXPORT"
+   v_file_name        colon 20 label "Fichier"
+   v_op_path          colon 20 label "Dossier"
+   /*v_file             colon 20 label "LIEN de L'EXPORT"*/
 
 with Frame a side-labels width 80. 
 
@@ -72,6 +129,27 @@ with frame reprint_frame down width 400.
 /* SET EXTERNAL labelS */
 setframelabels(frame reprint_frame:handle).
 
+/******************************************************************************
+ _____        _ _  _       _ _
+|_   _|     (_) | (_)     | (_)
+  | |  _ __  _| |_ _  __ _| |_ _______
+  | | | '_ \| | __| |/ _` | | |_  / _ \
+ _| |_| | | | | |_| | (_| | | |/ /  __/
+|_____|_| |_|_|\__|_|\__,_|_|_/___\___|                              INITIALIZE
+*******************************************************************************/
+assign
+   v_entity_from = current_entity
+   v_entity_to   = current_entity
+.
+
+/***************************************************************************************************
+ ______               _   _
+|  ____|             | | (_)
+| |__ ___  _ __   ___| |_ _  ___  _ __  ___
+|  __/ _ \| '_ \ / __| __| |/ _ \| '_ \/ __|
+| | | (_) | | | | (__| |_| | (_) | | | \__ \
+|_|  \___/|_| |_|\___|\__|_|\___/|_| |_|___/                                             FONCTIONS
+***************************************************************************************************/
 FUNCTION F_get_gn_parm returns character (input ip_fldname as character, 
                                        input ip_value   as character ):
       define variable v_path as character no-undo.
@@ -79,16 +157,17 @@ FUNCTION F_get_gn_parm returns character (input ip_fldname as character,
       v_path = "" .
 
       find first code_mstr 
-      where code_domain   = global_domain
-      and   code_fldname  = ip_fldname
-      and   code_value    = "Yes"
+           where code_domain   = global_domain
+             and code_fldname  = ip_fldname
+             and code_value    = "Yes"
       no-lock no-error.
 
       if available code_mstr then do : 
-      v_path = code_cmmt + "/"  .
-      return v_path.
+         v_path = code_cmmt + "/".
+         return v_path.
       end. 
-      else return v_path .
+      else
+         return v_path.
 END FUNCTION.  /* F_get_gn_parm */  
 
 
@@ -116,8 +195,7 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
    end.
 
 
-
-   if v-total = v-sum then do:
+   if v-total = v-sum or v-total = (v-sum + 0.02) or v-total = (v-sum - 0.02) then do:
       for each bff_tt_output where tt_output.field_22 = field_22
       and bff_tt_output.field_17 = "-" :
          bff_tt_output.field_17 = field_17.
@@ -125,6 +203,8 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
 
       return 1.
    end.
+
+   if v-index = 5000 then leave.
 
    v-count = 0.
    i = 0 .
@@ -134,71 +214,42 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
    and bf1_tt_output.field_4 = "G"
    and (bf1_tt_output.field_17 = ""  or  bf1_tt_output.field_17 = "-" ) :
 
-      if i >= v-index and i < v-len then do:
-
+      if i >= (v-index) and i <= v-len then do:
+         
+         bf1_tt_output.field_17 = "-" .
          if bf1_tt_output.field_14 = "C"
          then do: 
-            v-diff = v-total - (v-sum - decimal(bf1_tt_output.field_15)) .
+            v-diff = v-sum - decimal(bf1_tt_output.field_15) .
+            v-count = v-count + P_Combinations(v-total, v-sum - decimal(bf1_tt_output.field_15) , i + 1, field_22, field_17).
          /*v-total-va = v-sum - decimal(bf1_tt_output.field_15) .*/
          end.
          else do: 
-            v-diff = v-total - (v-sum + decimal(bf1_tt_output.field_15)) .
+            v-diff = v-sum + decimal(bf1_tt_output.field_15) .
+            v-count = v-count + P_Combinations(v-total, v-sum + decimal(bf1_tt_output.field_15) , i + 1, field_22, field_17).
          /*v-total-va = v-total-va + decimal(bf1_tt_output.field_15) .*/
          end.
 
-      if (v-diff > 0.02 or v-diff < - 0.02) then do:
-      /*if (v-sum + decimal(bf1_tt_output.field_15) <= v-total) then do:*/
-
-         bf1_tt_output.field_17 = "-" .
-         v-count = v-count + P_Combinations(v-total, v-sum + decimal(bf1_tt_output.field_15) , i + 1, field_22, field_17).
-      end.
-      /*else if v-diff = 0 or v-diff = 0.02 or v-diff = - 0.02 then do:
-         for each bff_tt_output where tt_output.field_22 = field_22
-         and bff_tt_output.field_17 = "-" :
-            bff_tt_output.field_17 = field_17.
-         end. 
-   
-         leave.
-      end.*/
 
 
       end.
-      else do : 
-         bf1_tt_output.field_17 = "".
-      end.
-      
 
-      
       i = i + 1 .
 
    end.
 
-   if (v-count = 0) then do:
-
-      /*for each bff_tt_output where tt_output.field_22 = field_22
-         and bff_tt_output.field_17 = "-" :
-            bff_tt_output.field_17 = "".
-      end.*/
-
+   for each bf1_tt_output 
+   where bf1_tt_output.field_22 = field_22 
+   and bf1_tt_output.field_4 = "G"
+   and bf1_tt_output.field_17 = "-"  :
+       bf1_tt_output.field_17 = "" .
    end.
-   /*else do :
-      for each bff_tt_output where tt_output.field_22 = field_22
-         and bff_tt_output.field_17 = "-" :
-            bff_tt_output.field_17 = "no".
-         end. 
    
-   end.*/
-
    return v-count.
-   
-
    
 END FUNCTION .
 
 
-
-
-/*
+/***********
 function F_Date_Format returns character (input ip_date as date) :              
                                                                            
    define variable v_date  as character no-undo.   
@@ -217,7 +268,7 @@ function F_Date_Format returns character (input ip_date as date) :
                   
                                                 
 END FUNCTION. /*F_Date_Format*/
-*/
+***********/
 
 function F_Date_Format returns character (input ip_date as date) :              
                                                                         
@@ -242,7 +293,14 @@ function F_Date_Format returns character (input ip_date as date) :
                                                         
 END FUNCTION. /*F_Date_Format*/
 
-
+/*******************************************************************************
+ __  __          _____ _   _ _      ____   ____  _____
+|  \/  |   /\   |_   _| \ | | |    / __ \ / __ \|  __ \
+| \  / |  /  \    | | |  \| | |   | |  | | |  | | |__) |
+| |\/| | / /\ \   | | | . ` | |   | |  | | |  | |  ___/
+| |  | |/ ____ \ _| |_| |\  | |___| |__| | |__| | |
+|_|  |_/_/    \_\_____|_| \_|______\____/ \____/|_|                    MAINLOOP
+*******************************************************************************/
 mainloop:
 repeat:
 
@@ -257,22 +315,30 @@ repeat:
    if v_datef_to   = hi_date then v_datef_to    = ? .
    if v_datev_from   = low_date then v_datev_from   = ? .
    if v_datev_to   = hi_date then v_datev_to    = ? .
+   if v_postingdate_from = low_date then v_postingdate_from = ?.
+   if v_postingdate_to = hi_date then v_postingdate_to = ?.
 
 
-   display v_file with frame a.
-      update 
-         v_entity_from     
-         v_entity_to       
-         v_piece_from      
-         v_piece_to        
-         v_four_from       
-         v_four_to         
-         v_datef_from
-         v_datef_to
-         v_datev_from
-         v_datev_to
-         v_rexp
-
+   display
+      v_file_name
+      v_op_path
+      /*v_file*/
+   with frame a.
+   
+   update 
+      v_entity_from     
+      v_entity_to       
+      v_piece_from      
+      v_piece_to        
+      v_four_from       
+      v_four_to         
+      v_datef_from
+      v_datef_to
+      v_datev_from
+      v_datev_to
+      v_postingdate_from
+      v_postingdate_to
+      v_rexp
    with frame a.
 
    assign
@@ -285,8 +351,8 @@ repeat:
                + substring(string(time,"HH:MM:SS"),4,2) 
                + substring(string(time,"HH:MM:SS"),7,2) 
                + ".txt"
+       v_file_name = v_file
    .
-
 
    if v_entity_to  = ""  then v_entity_to  = hi_char  .
    if v_piece_to  = ""  then v_piece_to  = hi_char  .
@@ -296,6 +362,9 @@ repeat:
    if v_datef_to   = ? then v_datef_to    = hi_date .
    if v_datev_from   = ? then v_datev_from   = low_date .
    if v_datev_to   = ? then v_datev_to    = hi_date .
+   if v_postingdate_from = ? then v_postingdate_from = low_date.
+   if v_postingdate_to = ? then v_postingdate_to = hi_date.
+
 
    v_op_path = F_get_gn_parm("Sage_Pur_Inter" , "Yes" ).
 
@@ -305,18 +374,11 @@ repeat:
       undo mainloop, retry mainloop.
    end.
 
-   v_file =  v_op_path +  v_file  .
+   v_file =  v_op_path + v_file  .
 
    if v_rexp = yes then run search_data(input "exp").
    else 
       run search_data(input "").
-
-
-   
-   
-   
-
-
 
 end.
 
@@ -367,7 +429,7 @@ define buffer b_tt_output for tt_output.
             next.
          end.
          else  do:
-            a = P_Combinations(b_tt_output.field_23 , v-total-vat , 0 , b_tt_output.field_22 , b_tt_output.field_17).
+            a = P_Combinations(b_tt_output.field_23 - v-total-vat , v-total-vat , 0 , b_tt_output.field_22 , b_tt_output.field_17).
          end.
       end.
          
@@ -463,7 +525,7 @@ define buffer b_tt_output for tt_output.
       for each b_tt_output 
       where b_tt_output.field_22 = tt_output.field_22
       and b_tt_output.field_4 = "V"
-      and decimal(b_tt_output.field_19) <> 0:
+      and decimal(b_tt_output.field_19) <> 0  :
 
          put stream file_csv unformatted 
          b_tt_output.field_1    v_file_sp
@@ -486,7 +548,7 @@ define buffer b_tt_output for tt_output.
          b_tt_output.field_18   v_file_sp
          b_tt_output.field_19   v_file_sp
          b_tt_output.field_20   v_file_sp
-         b_tt_output.field_23      
+         b_tt_output.field_21      
          skip.
          
       end.
@@ -767,7 +829,10 @@ procedure search_data :
    and    CInvoice.CInvoiceDueDate     <=  v_datev_to
    and    CInvoice.CInvoiceDate        >=  v_datef_from
    and    CInvoice.CInvoiceDate        <=  v_datef_to
+   and    CInvoice.CInvoicePostingDate >= v_postingdate_from
+   and    CInvoice.CInvoicePostingDate <= v_postingdate_to
    and    Cinvoice.CustomCombo0        =    i_exp
+   and    CInvoice.CInvoiceIsOpen      = yes
    and    (CInvoice.CInvoiceType = "CREDITNOTE" 
             OR CInvoice.CInvoiceType = "INVOICE")
    ,first  Creditor  no-lock
@@ -789,15 +854,10 @@ procedure search_data :
    and Journal.JournalCode <= journal_t
    no-lock:
 
+      
+      if  Cinvoice.CinvoiceType = "INVOICE" then do:
+         if CInvoice.CInvoiceOriginalCreditTC = 0 then next.
 
-      if   Cinvoice.CinvoiceType = "INVOICE" then do:
-
-         find first zz_cinvoice where zz_cinvoice.CinvoiceType = "CREDITNOTE" and zz_cinvoice.CInvoiceReference = Cinvoice.CInvoiceReference
-         and zz_cinvoice.CustomCombo0 = Cinvoice.CustomCombo0 no-lock no-error.
-         
-         if available zz_cinvoice then do:
-               next.
-         end.
 
          find first CInvoicePO where CInvoicePO.CInvoice_ID = Cinvoice.CInvoice_ID no-lock no-error.
 
@@ -828,7 +888,7 @@ procedure search_data :
       end.
 
       if  Cinvoice.CinvoiceType = "CREDITNOTE" then do:
-
+         if CInvoice.CInvoiceOriginalDebitTC = 0 then next.
          find first zz_cinvoice where zz_cinvoice.CinvoiceType = "INVOICE" and zz_cinvoice.CInvoiceReference = Cinvoice.CInvoiceReference 
          and zz_cinvoice.CustomCombo0 = Cinvoice.CustomCombo0 no-lock no-error.
 
@@ -1185,7 +1245,24 @@ procedure search_data :
 
                find first CostCentre                                                    
                where CostCentre.CostCentre_ID = Postingline.CostCentre_ID               
-               no-lock no-error.  
+               no-lock no-error.
+
+               for first APMatchingLN 
+                  where APMatchingLN.PvoPostingLine_ID = PostingLine.PostingLine_ID
+                  no-lock :
+                     
+                     if APMatchingLN.APMatchingLNPVodItemType = "MEMOITEM" then do:
+
+                        find first CostCentre                                                    
+                        where CostCentre.CostCentre_ID = APMatchingLN.CostCentre_ID               
+                        no-lock no-error.
+
+                        find first project                                                       
+                        where  Project.Project_ID = APMatchingLN.Project_ID
+                        no-lock no-error.
+
+                     end.
+               end.
                
                if (available CostCentre) then
                      arr_line[6] = CostCentre.CostCentreCode. else arr_line[6] = "".
@@ -1216,6 +1293,7 @@ procedure search_data :
 
                run add_row(input arr_line).
                Cinvoice.CustomCombo0 = "exp". 
+               Cinvoice.CustomDate0  = today.
 
                arr_line[4] = "A".
 
@@ -1225,7 +1303,24 @@ procedure search_data :
 
                find first CostCentre                                                    
                where CostCentre.CostCentre_ID = Postingline.CostCentre_ID               
-               no-lock no-error.  
+               no-lock no-error. 
+
+               for first APMatchingLN 
+                  where APMatchingLN.PvoPostingLine_ID = PostingLine.PostingLine_ID
+                  no-lock :
+                     
+                     if APMatchingLN.APMatchingLNPVodItemType = "MEMOITEM" then do:
+
+                        find first CostCentre                                                    
+                        where CostCentre.CostCentre_ID = APMatchingLN.CostCentre_ID               
+                        no-lock no-error.
+
+                        find first project                                                       
+                        where  Project.Project_ID = APMatchingLN.Project_ID
+                        no-lock no-error.
+
+                     end.
+               end. 
                   
                if (available CostCentre) then
                arr_line[6] = CostCentre.CostCentreCode. else arr_line[6] = "".
@@ -1244,6 +1339,7 @@ procedure search_data :
             if (GL.GLTypeCode = "VAT" ) then do:
                
                      Cinvoice.CustomCombo0 = "exp" .
+                     Cinvoice.CustomDate0  = today.
                      run add_row(input arr_line).
                   
                /*Cinvoice.CustomCombo0 = "exp" .
@@ -1262,7 +1358,8 @@ procedure search_data :
 
 
             run add_row(input arr_line).
-            Cinvoice.CustomCombo0 = "exp" .  
+            Cinvoice.CustomCombo0 = "exp" .
+            Cinvoice.CustomDate0  = today.
          end.
 
 

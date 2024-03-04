@@ -41,9 +41,10 @@ define  variable v_invo_date_fr  like   DInvoice.DInvoiceDate           no-undo.
 define  variable v_invo_date_to  like   DInvoice.DInvoiceDate           no-undo.
 define  variable v_entity_fr     like   Company.CompanyCode             no-undo.
 define  variable v_entity_to     like   Company.CompanyCode             no-undo.
-define  variable v_op_path       as     character                       no-undo.
+define  variable v_op_path       as     character format "x(40)"        no-undo.
 define  variable v_rexport       as     logical   initial  no           no-undo.
 define  variable v_file          as     character format "x(60)"        no-undo.
+define  variable v_file_name     as     character format "x(40)"        no-undo.
 define stream file_csv. 
 
 /*******************************************************************************
@@ -92,18 +93,20 @@ ______
 |_|  |_|  \__,_|_| |_| |_|\___||___/                                     FRAMES
 *******************************************************************************/
 Form 
-   v_ref_fr           colon 10 label "Refrence"
+   v_entity_fr        colon 10 label "Entite"
+   v_entity_to        colon 47 label "A"
+   v_ref_fr           colon 10 label "Reference"
    v_ref_to           colon 47 label "A"
-   v_ad_fac_fr        colon 10 label "adr fact"
+   v_ad_fac_fr        colon 10 label "Adr fact"
    v_ad_fac_to        colon 47 label "A"
    v_invo_date_fr     colon 10 label "Date"
    v_invo_date_to     colon 47 label "A"
-   v_entity_fr        colon 10 label "Entite"
-   v_entity_to        colon 47 label "A"
    skip(1)
-   v_rexport           colon 20 label "Re-Export"
+   v_rexport          colon 20 label "Réexporter"
    skip(1)
-   v_file             colon 17 label "LIEN de L'EXPORT"
+   v_file_name        colon 20 label "Fichier"
+   v_op_path          colon 20 label "Dossier"
+   /*v_file             colon 17 label "LIEN de L'EXPORT"*/
    with Frame main_frame side-labels width 80. 
    /* SET EXTERNAL LABELS */
 setFrameLabels(frame main_frame:handle).
@@ -118,6 +121,8 @@ setFrameLabels(frame main_frame:handle).
 *******************************************************************************/
 
 assign 
+   v_entity_fr = current_entity
+   v_entity_to = current_entity
    v_invo_date_fr = current_date
    v_invo_date_to = current_date
 .
@@ -188,30 +193,34 @@ repeat:
 
    empty temp-table tt_output.
 
+   if v_entity_to    = hi_char  then v_entity_to     = "" .
    if v_ref_to       = hi_char  then v_ref_to        = "" .
    if v_ad_fac_to    = hi_char  then v_ad_fac_to     = "" .
-   if v_entity_to    = hi_char  then v_entity_to     = "" .
    if v_invo_date_fr = low_date then v_invo_date_fr  = ?  .
    if v_invo_date_to = hi_date  then v_invo_date_to  = ?  .
 
 
-   display v_file with frame main_frame.
+   display
+      /*v_file*/
+      v_file_name
+      v_op_path
+   with frame main_frame.
+   
    update
+      v_entity_fr    
+      v_entity_to    
       v_ref_fr       
       v_ref_to           
       v_ad_fac_fr    
       v_ad_fac_to    
       v_invo_date_fr 
       v_invo_date_to 
-      v_entity_fr    
-      v_entity_to    
       v_rexport       
    with frame main_frame.
 
-
+   if v_entity_to     = "" then v_entity_to      = hi_char.
    if v_ref_to        = "" then v_ref_to         = hi_char.
    if v_ad_fac_to     = "" then v_ad_fac_to      = hi_char.
-   if v_entity_to     = "" then v_entity_to      = hi_char.
    if v_invo_date_fr  = ?  then v_invo_date_fr   = low_date.
    if v_invo_date_to  = ?  then v_invo_date_to   = hi_date.
 
@@ -225,6 +234,7 @@ repeat:
                + substring(string(time,"HH:MM:SS"),4,2) 
                + substring(string(time,"HH:MM:SS"),7,2) 
                + ".txt"
+      v_file_name = v_file
    .
 
    v_op_path = F_get_gn_parm("Sage_Sales_Inter" , "Yes").
@@ -252,7 +262,7 @@ repeat:
                            input v_entity_to).
             
       v_file =  v_op_path + v_file  .
-      //v_file = "/apps/qad2020ee/build/work/telnet/test/" + v_file.
+      /*v_file = "/apps/qad2020ee/build/work/telnet/test/" + v_file.*/
 
       run P_generate_file (input ";" ).
    end. /*if v_op_path <> "" then do */
@@ -589,9 +599,9 @@ PROCEDURE search_data :
 
 
             run add_row(input arr_line).
-            Dinvoice.CustomCombo0 = "exp" .
+            Dinvoice.CustomCombo0 = "exp".
+            Dinvoice.CustomDate0 = today.
             arr_line[4] = "A".
-            
 
          end. /*if (GL.GLTypeCode = "STANDARD")*/
          
