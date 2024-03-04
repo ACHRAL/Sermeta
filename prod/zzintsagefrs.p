@@ -187,7 +187,7 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
       return 1.
    end.
 
-   if v-index = 5000 then leave.
+   /*if v-index = 5000 then leave.*/
 
    v-count = 0.
    i = 0 .
@@ -355,180 +355,175 @@ procedure write_csv:
    
    output stream file_csv to value (v_file) append.
    for each tt_output 
-   break by field_22
-   :
+   break by field_22:
 
       IF FIRST-OF(tt_output.field_22) then do:
 
 
 
-      for each b_tt_output where b_tt_output.field_22 = tt_output.field_22
-      and b_tt_output.field_4 = "V" and b_tt_output.field_17 <> "" and b_tt_output.field_14 = "D" :
-         
-         define var a as decimal.
-         a = 1.
-         do while a <> 0 :
-         v-total-vat = 0 .
-         v-res = 1.
-         a = 1.
-         
-         for each b2_tt_output where b2_tt_output.field_22 = b_tt_output.field_22
-         and b2_tt_output.field_17 = b_tt_output.field_17 and  b2_tt_output.field_4 = "G":
+         for each b_tt_output where b_tt_output.field_22 = tt_output.field_22
+         and b_tt_output.field_4 = "V" and b_tt_output.field_17 <> "" and b_tt_output.field_14 = "D" :
 
-            if b2_tt_output.field_14 = "D" then
-               v-total-vat = v-total-vat + decimal(b2_tt_output.field_15).
-            else 
-               v-total-vat = v-total-vat - decimal(b2_tt_output.field_15).
+            define var a as decimal.
+            a = 1.
+            do while a <> 0 :*/
+               v-total-vat = 0 .
+               v-res = 1.
+               a = 1.
 
+               for each b2_tt_output where b2_tt_output.field_22 = b_tt_output.field_22
+               and b2_tt_output.field_17 = b_tt_output.field_17 and  b2_tt_output.field_4 = "G":
+
+                  if b2_tt_output.field_14 = "D" then
+                     v-total-vat = v-total-vat + decimal(b2_tt_output.field_15).
+                  else 
+                     v-total-vat = v-total-vat - decimal(b2_tt_output.field_15).
+
+
+               end.
+
+               if (v-total-vat = b_tt_output.field_23) then do:
+                  a = 0.
+                  next.
+               end.
+               else  do:
+                  a = P_Combinations(b_tt_output.field_23 - v-total-vat , v-total-vat , 0 , b_tt_output.field_22 , b_tt_output.field_17).
+               end.
+            end.
+         end.
+
+
+
+         for each b_tt_output 
+         where b_tt_output.field_22 = tt_output.field_22
+         and b_tt_output.field_4 = "G" :
+
+            for each b2_tt_output 
+            where b_tt_output.field_22 = b2_tt_output.field_22
+            and b2_tt_output.field_1 = b_tt_output.field_1
+            and b2_tt_output.field_2 = b_tt_output.field_2
+            and b2_tt_output.field_3 = b_tt_output.field_3
+            and b2_tt_output.field_5 = b_tt_output.field_5
+            and b2_tt_output.field_4 = "A"
+            and b2_tt_output.field_7 = b_tt_output.field_7
+            and b2_tt_output.field_8 = b_tt_output.field_8
+            and b2_tt_output.field_9 = b_tt_output.field_9
+            and b2_tt_output.field_10 = b_tt_output.field_10
+            and b2_tt_output.field_11 = b_tt_output.field_11
+            and b2_tt_output.field_12 = b_tt_output.field_12
+            and b2_tt_output.field_13 = b_tt_output.field_13
+            and b2_tt_output.field_14 = b_tt_output.field_14
+            and b2_tt_output.field_15 = b_tt_output.field_15
+            and b2_tt_output.field_16 = b_tt_output.field_16
+            and b2_tt_output.field_18 = b_tt_output.field_18
+            and b2_tt_output.field_19 = b_tt_output.field_19
+            and b2_tt_output.field_20 = b_tt_output.field_20 :
+
+            b2_tt_output.field_17 = b_tt_output.field_17.
+
+         end.
+         end.
+
+         /*check if there is an empty TVA_PROFILE .*/
+
+
+         for each b_tt_output 
+         where b_tt_output.field_22 = tt_output.field_22
+         and b_tt_output.field_4 <> "V" 
+         and b_tt_output.field_4 <> "X":
+
+
+            put stream file_csv unformatted 
+            b_tt_output.field_1    v_file_sp
+            b_tt_output.field_2    v_file_sp
+            b_tt_output.field_3    v_file_sp
+            b_tt_output.field_4    v_file_sp
+            b_tt_output.field_5    v_file_sp
+            b_tt_output.field_6    v_file_sp
+            b_tt_output.field_7    v_file_sp
+            b_tt_output.field_8    v_file_sp
+            b_tt_output.field_9    v_file_sp
+            b_tt_output.field_10   v_file_sp
+            b_tt_output.field_11   v_file_sp
+            b_tt_output.field_12   v_file_sp
+            b_tt_output.field_13   v_file_sp
+            b_tt_output.field_14   v_file_sp
+            b_tt_output.field_15   v_file_sp
+            b_tt_output.field_16   v_file_sp
+            b_tt_output.field_17   v_file_sp
+            b_tt_output.field_18   v_file_sp
+            b_tt_output.field_19   v_file_sp
+            b_tt_output.field_20   v_file_sp
+            b_tt_output.field_21     
+            skip.
 
          end.
 
-         if (v-total-vat = b_tt_output.field_23) then do:
-            /*b2_tt_output.field_17 = b_tt_output.field_17.*/
-            a = 0.
-            next.
+         for each b_tt_output 
+         where b_tt_output.field_22 = tt_output.field_22
+         and b_tt_output.field_4 = "V"
+         and decimal(b_tt_output.field_19) <> 0  :
+
+            put stream file_csv unformatted 
+            b_tt_output.field_1    v_file_sp
+            b_tt_output.field_2    v_file_sp
+            b_tt_output.field_3    v_file_sp
+            "G"                    v_file_sp
+            b_tt_output.field_5    v_file_sp
+            b_tt_output.field_6    v_file_sp
+            b_tt_output.field_7    v_file_sp
+            b_tt_output.field_8    v_file_sp
+            b_tt_output.field_9    v_file_sp
+            b_tt_output.field_10   v_file_sp
+            b_tt_output.field_11   v_file_sp
+            b_tt_output.field_12   v_file_sp
+            b_tt_output.field_13   v_file_sp
+            b_tt_output.field_14   v_file_sp
+            b_tt_output.field_15   v_file_sp
+            b_tt_output.field_16   v_file_sp
+            b_tt_output.field_17   v_file_sp
+            b_tt_output.field_18   v_file_sp
+            b_tt_output.field_19   v_file_sp
+            b_tt_output.field_20   v_file_sp
+            b_tt_output.field_23
+            skip.
+
          end.
-         else  do:
-            a = P_Combinations(b_tt_output.field_23 - v-total-vat , v-total-vat , 0 , b_tt_output.field_22 , b_tt_output.field_17).
-         end.
-      end.
-         
-        
-
-      end.
-
-
-
-      for each b_tt_output 
-      where b_tt_output.field_22 = tt_output.field_22
-      and b_tt_output.field_4 = "G" :
-
-         for each b2_tt_output 
-         where b_tt_output.field_22 = b2_tt_output.field_22
-         and b2_tt_output.field_1 = b_tt_output.field_1
-         and b2_tt_output.field_2 = b_tt_output.field_2
-         and b2_tt_output.field_3 = b_tt_output.field_3
-         and b2_tt_output.field_5 = b_tt_output.field_5
-         and b2_tt_output.field_4 = "A"
-         and b2_tt_output.field_7 = b_tt_output.field_7
-         and b2_tt_output.field_8 = b_tt_output.field_8
-         and b2_tt_output.field_9 = b_tt_output.field_9
-         and b2_tt_output.field_10 = b_tt_output.field_10
-         and b2_tt_output.field_11 = b_tt_output.field_11
-         and b2_tt_output.field_12 = b_tt_output.field_12
-         and b2_tt_output.field_13 = b_tt_output.field_13
-         and b2_tt_output.field_14 = b_tt_output.field_14
-         and b2_tt_output.field_15 = b_tt_output.field_15
-         and b2_tt_output.field_16 = b_tt_output.field_16
-         and b2_tt_output.field_18 = b_tt_output.field_18
-         and b2_tt_output.field_19 = b_tt_output.field_19
-         and b2_tt_output.field_20 = b_tt_output.field_20 :
-
-         b2_tt_output.field_17 = b_tt_output.field_17.
-
-      end.
-      end.
-
-      /*check if there is an empty TVA_PROFILE .*/
-      
-
-      for each b_tt_output 
-      where b_tt_output.field_22 = tt_output.field_22
-      and b_tt_output.field_4 <> "V" 
-      and b_tt_output.field_4 <> "X":
-
-
-         put stream file_csv unformatted 
-         b_tt_output.field_1    v_file_sp
-         b_tt_output.field_2    v_file_sp
-         b_tt_output.field_3    v_file_sp
-         b_tt_output.field_4    v_file_sp
-         b_tt_output.field_5    v_file_sp
-         b_tt_output.field_6    v_file_sp
-         b_tt_output.field_7    v_file_sp
-         b_tt_output.field_8    v_file_sp
-         b_tt_output.field_9    v_file_sp
-         b_tt_output.field_10   v_file_sp
-         b_tt_output.field_11   v_file_sp
-         b_tt_output.field_12   v_file_sp
-         b_tt_output.field_13   v_file_sp
-         b_tt_output.field_14   v_file_sp
-         b_tt_output.field_15   v_file_sp
-         b_tt_output.field_16   v_file_sp
-         b_tt_output.field_17   v_file_sp
-         b_tt_output.field_18   v_file_sp
-         b_tt_output.field_19   v_file_sp
-         b_tt_output.field_20   v_file_sp
-         b_tt_output.field_21     
-         skip.
-         
-      end.
-
-      for each b_tt_output 
-      where b_tt_output.field_22 = tt_output.field_22
-      and b_tt_output.field_4 = "V"
-      and decimal(b_tt_output.field_19) <> 0  :
-
-         put stream file_csv unformatted 
-         b_tt_output.field_1    v_file_sp
-         b_tt_output.field_2    v_file_sp
-         b_tt_output.field_3    v_file_sp
-         "G"                    v_file_sp
-         b_tt_output.field_5    v_file_sp
-         b_tt_output.field_6    v_file_sp
-         b_tt_output.field_7    v_file_sp
-         b_tt_output.field_8    v_file_sp
-         b_tt_output.field_9    v_file_sp
-         b_tt_output.field_10   v_file_sp
-         b_tt_output.field_11   v_file_sp
-         b_tt_output.field_12   v_file_sp
-         b_tt_output.field_13   v_file_sp
-         b_tt_output.field_14   v_file_sp
-         b_tt_output.field_15   v_file_sp
-         b_tt_output.field_16   v_file_sp
-         b_tt_output.field_17   v_file_sp
-         b_tt_output.field_18   v_file_sp
-         b_tt_output.field_19   v_file_sp
-         b_tt_output.field_20   v_file_sp
-         b_tt_output.field_23
-         skip.
-         
-      end.
  
-      for each b_tt_output 
-      where b_tt_output.field_22 = tt_output.field_22
-      and b_tt_output.field_4 = "X":
+         for each b_tt_output 
+         where b_tt_output.field_22 = tt_output.field_22
+         and b_tt_output.field_4 = "X":
 
-      
-         put stream file_csv unformatted 
-         b_tt_output.field_1    v_file_sp
-         b_tt_output.field_2    v_file_sp
-         b_tt_output.field_3    v_file_sp
-         b_tt_output.field_4    v_file_sp
-         b_tt_output.field_5    v_file_sp
-         b_tt_output.field_6    v_file_sp
-         b_tt_output.field_7    v_file_sp
-         b_tt_output.field_8    v_file_sp
-         b_tt_output.field_9    v_file_sp
-         b_tt_output.field_10   v_file_sp
-         b_tt_output.field_11   v_file_sp
-         b_tt_output.field_12   v_file_sp
-         b_tt_output.field_13   v_file_sp
-         b_tt_output.field_14   v_file_sp
-         b_tt_output.field_15   v_file_sp
-         b_tt_output.field_16   v_file_sp
-         b_tt_output.field_17   v_file_sp
-         b_tt_output.field_18   v_file_sp
-         b_tt_output.field_19   v_file_sp
-         b_tt_output.field_20   v_file_sp 
-         b_tt_output.field_21      
-         skip.
          
+            put stream file_csv unformatted 
+            b_tt_output.field_1    v_file_sp
+            b_tt_output.field_2    v_file_sp
+            b_tt_output.field_3    v_file_sp
+            b_tt_output.field_4    v_file_sp
+            b_tt_output.field_5    v_file_sp
+            b_tt_output.field_6    v_file_sp
+            b_tt_output.field_7    v_file_sp
+            b_tt_output.field_8    v_file_sp
+            b_tt_output.field_9    v_file_sp
+            b_tt_output.field_10   v_file_sp
+            b_tt_output.field_11   v_file_sp
+            b_tt_output.field_12   v_file_sp
+            b_tt_output.field_13   v_file_sp
+            b_tt_output.field_14   v_file_sp
+            b_tt_output.field_15   v_file_sp
+            b_tt_output.field_16   v_file_sp
+            b_tt_output.field_17   v_file_sp
+            b_tt_output.field_18   v_file_sp
+            b_tt_output.field_19   v_file_sp
+            b_tt_output.field_20   v_file_sp 
+            b_tt_output.field_21      
+            skip.
+
+         end.
+
+
+
       end.
-
-
-
-   end.
    end.
 
 
