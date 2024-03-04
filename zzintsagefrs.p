@@ -195,7 +195,7 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
    end.
 
 
-   if v-total = v-sum or v-total = (v-sum + 0.02) or v-total = (v-sum - 0.02) then do:
+   if v-total = v-sum /*or v-total = (v-sum + 0.02) or v-total = (v-sum - 0.02)*/ then do:
       for each bff_tt_output where tt_output.field_22 = field_22
       and bff_tt_output.field_17 = "-" :
          bff_tt_output.field_17 = field_17.
@@ -204,7 +204,6 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
       return 0.
    end.
 
-   if v-index = 5000 then leave.
 
    v-count = 0.
    i = 0 .
@@ -214,7 +213,7 @@ Function P_Combinations  returns decimal (input  v-total   as decimal,
    and bf1_tt_output.field_4 = "G"
    and (bf1_tt_output.field_17 = ""  or  bf1_tt_output.field_17 = "-" ) :
 
-      if i >= (v-index) and i <= v-len then do:
+      if i >= (v-index) and i < v-len then do:
          
          bf1_tt_output.field_17 = "-" .
          if bf1_tt_output.field_14 = "C"
@@ -429,7 +428,8 @@ define buffer b_tt_output for tt_output.
                next.
             end.
             else  do:
-               a = P_Combinations(b_tt_output.field_23 - v-total-vat , v-total-vat , 0 , b_tt_output.field_22 , b_tt_output.field_17).
+               //a = P_Combinations(b_tt_output.field_23 - v-total-vat , v-total-vat , 0 , b_tt_output.field_22 , b_tt_output.field_17).
+               a = 0.
             end.
          end.
          
@@ -1169,7 +1169,12 @@ procedure search_data :
                   if available Vat 
                   then do: 
 
-                     if APMatchingLN.PvoPostingLine_ID = PostingLine.PostingLine_ID then do:
+                     if APMatchingLN.NewExpensePostingLine_ID = PostingLine.PostingLine_ID 
+                     or APMatchingLN.PvoPostingLine_ID = PostingLine.PostingLine_ID 
+                     or APMatchingLN.RevExpensePostingLine_ID = PostingLine.PostingLine_ID 
+                     or APMatchingLN.VatRatePostingLine_ID = PostingLine.PostingLine_ID 
+                     or APMatchingLN.VatUsagePostingLine_ID = PostingLine.PostingLine_ID 
+                     then do:
                         arr_line[17] = string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
                         //message ii = ii + 1  "/" Glcode  "/" string("D" + vat.VatCode + " " + "-" + " " + vat.VatDescription).
                      end.
@@ -1211,19 +1216,19 @@ procedure search_data :
                end. /*if (GL.GLTypeCode = "VAT") */
             end. /*for each postingvat */
             */
-               
+            
+                     
 
 
             if (GL.GLTypeCode = "SYSTEM" ) then do:
 
                arr_line[4] = "G".
-               /*find first PostingVat  
-               where PostingVat.PostingLine_ID = PostingLine.PostingLine_ID
+               find first PostingVat of Posting
                no-lock no-error.
                if available PostingVat then find first vat                                                              
                where vat.vat_ID = PostingVat.vat_ID                            
                no-lock no-error.                                                          
-               if available vat then arr_line[17] = "D" + vat.VatCode + " " + "-" + " " + vat.VatDescription.*/
+               if available vat then arr_line[17] = "D" + vat.VatCode + " " + "-" + " " + vat.VatDescription.
 
              
 
@@ -1275,13 +1280,12 @@ procedure search_data :
             if (GL.GLTypeCode = "STANDARD") then do:
 
                arr_line[4] = "G".
-               /*find first PostingVat  
-               where PostingVat.PostingLine_ID = PostingLine.PostingLine_ID
+               find first PostingVat of Posting
                no-lock no-error.
                if available PostingVat then find first vat                                                              
                where vat.vat_ID = PostingVat.vat_ID                            
                no-lock no-error.                                                          
-               if available vat then arr_line[17] = "D" + vat.VatCode + " " + "-" + " " + vat.VatDescription.*/
+               if available vat then arr_line[17] = "D" + vat.VatCode + " " + "-" + " " + vat.VatDescription/
                
 
                run add_row(input arr_line).
