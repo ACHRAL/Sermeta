@@ -406,8 +406,8 @@ PROCEDURE search_data :
    and Journal.JournalCode   <= journal_t
    no-lock:
 
+      /*  export all types of invoices
       /*Rule 02 ne pas inclure les factures extroné*/
-
       if   Dinvoice.DinvoiceType = "INVOICE" then do:
          
          find first zz_dinvoice where zz_dinvoice.DinvoiceType = "CREDITNOTE" and zz_dinvoice.DinvoiceDIText = dinvoice.DinvoiceDIText
@@ -429,8 +429,8 @@ PROCEDURE search_data :
          end. /*if available zz_dinvoice then do*/
 
       end. /*if  Dinvoice.DinvoiceType = "CREDITNOTE"*/
+      */
 
-                                                                                      
       find first BusinessRelation                                              
       where BusinessRelation.BusinessRelation_ID = Debtor.BusinessRelation_ID  
       no-lock no-error.
